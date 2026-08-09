@@ -34,19 +34,53 @@ export default function RootLayout({
               </p>
             </div>
 
-            <div className="footer-links">
+            <nav className="footer-links" aria-label="Footer navigation">
               <a href="/about">About Us</a>
-              <a href="/contact">Contact Us</a>
-              <a href="/terms">Terms & Conditions</a>
               <a href="/privacy">Privacy Policy</a>
+              <a href="/contact">Contact Us</a>
+              <a href="/terms">Terms &amp; Conditions</a>
+            </nav>
+
+            <div className="footer-contact">
+              <a
+                href="mailto:connectjobsera@gmail.com"
+                aria-label="Email Jobsera at connectjobsera@gmail.com"
+              >
+                <span className="gmail-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3 5.5L12 12.5L21 5.5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <rect
+                      x="3"
+                      y="5"
+                      width="18"
+                      height="14"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                </span>
+
+                <span>connectjobsera@gmail.com</span>
+              </a>
             </div>
 
             <div className="footer-bottom">
-              <span>© 2026 Jobsera</span>
-
-              <a href="mailto:connectjobsera@gmail.com">
-                connectjobsera@gmail.com
-              </a>
+              <span>
+                ① 2026 Jobsera. All Rights are Reserved.
+              </span>
             </div>
           </div>
         </footer>
