@@ -24,7 +24,7 @@ export default function Header() {
           onClick={() => setMenuOpen(false)}
         >
           <img
-            src="/jobsera-logo.png"
+            src="/jobsera-logo.PNG"
             alt="Jobsera"
             className="logo-image"
           />
