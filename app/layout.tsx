@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import "./globals.css";
 import Header from "../components/Header";
 
@@ -34,10 +33,10 @@ export default function RootLayout({
             </div>
 
             <nav className="footer-links" aria-label="Footer navigation">
-              <Link href="/about">About Us</Link>
-              <Link href="/contact">Contact Us</Link>
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/terms">Terms & Conditions</Link>
+              <a href="/about">About Us</a>
+              <a href="/contact">Contact Us</a>
+              <a href="/privacy">Privacy Policy</a>
+              <a href="/terms">Terms &amp; Conditions</a>
             </nav>
 
             <a
@@ -47,19 +46,12 @@ export default function RootLayout({
             >
               <span className="gmail-icon" aria-hidden="true">
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M3 6.5L12 13L21 6.5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
                   <rect
                     x="3"
                     y="5"
@@ -68,6 +60,13 @@ export default function RootLayout({
                     rx="2"
                     stroke="currentColor"
                     strokeWidth="2"
+                  />
+                  <path
+                    d="M3 7L12 13L21 7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </span>
