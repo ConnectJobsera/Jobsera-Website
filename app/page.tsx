@@ -1,34 +1,25 @@
 import Link from "next/link";
 
 const qualifications = [
-  { label: "8th Pass Jobs", href: "/jobs/8th-pass" },
-  { label: "10th Pass Jobs", href: "/jobs/10th-pass" },
-  { label: "12th Pass Jobs", href: "/jobs/12th-pass" },
-  { label: "Diploma Jobs", href: "/jobs/diploma" },
-  { label: "Graduate Jobs", href: "/jobs/graduate" },
-];
-
-const blogs = [
   {
-    category: "CAREER GUIDE",
-    title: "How to Build a Resume That Gets Noticed",
-    description:
-      "A strong resume is clear, relevant and easy to scan. Focus on measurable achievements and skills that match the opportunity.",
-    date: "July 19, 2026",
+    label: "8th Pass",
+    href: "/jobs/8th-pass",
   },
   {
-    category: "CAREER GROWTH",
-    title: "5 Skills Employers Are Looking For",
-    description:
-      "Communication, problem solving, digital literacy, adaptability and collaboration remain valuable across industries.",
-    date: "July 18, 2026",
+    label: "10th Pass",
+    href: "/jobs/10th-pass",
   },
   {
-    category: "JOB SEARCH",
-    title: "How to Find the Right Job for You",
-    description:
-      "Learn how to identify suitable opportunities, understand job requirements and apply with confidence.",
-    date: "July 17, 2026",
+    label: "12th Pass",
+    href: "/jobs/12th-pass",
+  },
+  {
+    label: "Diploma",
+    href: "/jobs/diploma",
+  },
+  {
+    label: "Graduate",
+    href: "/jobs/graduate",
   },
 ];
 
@@ -36,58 +27,82 @@ const jobs = [
   {
     company: "TECHNOVA",
     title: "Frontend Developer",
-    description:
-      "We are looking for a frontend developer comfortable with HTML, CSS and JavaScript. Build responsive interfaces and collaborate with the team.",
     location: "Remote",
-    date: "July 19, 2026",
+    type: "Full Time",
+    date: "Recently added",
   },
   {
     company: "DIGITAL SOLUTIONS",
     title: "Customer Support Executive",
-    description:
-      "Join a growing team and help customers resolve their questions while developing valuable communication and problem-solving skills.",
     location: "Delhi",
-    date: "July 18, 2026",
+    type: "Full Time",
+    date: "Recently added",
   },
   {
     company: "STARTUP HUB",
     title: "Marketing Intern",
-    description:
-      "Work with a young team on digital marketing, content creation and social media campaigns.",
     location: "Noida",
-    date: "July 17, 2026",
+    type: "Internship",
+    date: "Recently added",
+  },
+];
+
+const articles = [
+  {
+    category: "CAREER GUIDE",
+    title: "How to Build a Resume That Gets Noticed",
+    description:
+      "Simple ways to make your resume clearer, more relevant and easier for employers to understand.",
+  },
+  {
+    category: "CAREER GROWTH",
+    title: "Skills That Can Help You Grow",
+    description:
+      "Explore practical skills that can improve your confidence and help you prepare for today's opportunities.",
+  },
+  {
+    category: "JOB SEARCH",
+    title: "How to Find the Right Job",
+    description:
+      "A simple approach to finding opportunities that match your skills, experience and career goals.",
   },
 ];
 
 export default function Home() {
   return (
-    <main>
+    <>
       {/* HERO */}
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-content">
-            <div className="hero-eyebrow">
-              Learn · Discover · Apply
-            </div>
+            <p className="hero-eyebrow">
+              YOUR CAREER STARTS HERE
+            </p>
 
             <h1 className="hero-title">
-              Find opportunities.
+              Find the right
               <br />
-              Build your <span>career.</span>
+              <span>opportunity.</span>
             </h1>
 
             <p className="hero-description">
-              Discover useful career articles, job opportunities and
-              practical insights — all in one clean platform.
+              Discover jobs, career information and useful resources
+              designed to help you take your next step with confidence.
             </p>
 
             <div className="hero-actions">
-              <Link href="/jobs" className="button button-primary">
+              <Link
+                href="/jobs"
+                className="button button-primary"
+              >
                 Explore Jobs
               </Link>
 
-              <Link href="/blogs" className="button button-secondary">
-                Read Blogs
+              <Link
+                href="/blogs"
+                className="button button-secondary"
+              >
+                Career Insights
               </Link>
             </div>
           </div>
@@ -95,7 +110,7 @@ export default function Home() {
           <div className="hero-card">
             <div className="hero-card-header">
               <h2 className="hero-card-title">
-                Career opportunities
+                Explore Jobsera
               </h2>
 
               <span className="hero-card-badge">
@@ -106,31 +121,31 @@ export default function Home() {
             <div className="hero-stat-list">
               <div className="hero-stat">
                 <span className="hero-stat-label">
-                  Latest jobs
+                  Latest opportunities
                 </span>
 
                 <span className="hero-stat-value">
-                  Explore
+                  Explore →
                 </span>
               </div>
 
               <div className="hero-stat">
                 <span className="hero-stat-label">
-                  Career insights
+                  Career articles
                 </span>
 
                 <span className="hero-stat-value">
-                  Read
+                  Read →
                 </span>
               </div>
 
               <div className="hero-stat">
                 <span className="hero-stat-label">
-                  Qualification
+                  Jobs by qualification
                 </span>
 
                 <span className="hero-stat-value">
-                  Find jobs
+                  Browse →
                 </span>
               </div>
             </div>
@@ -143,15 +158,17 @@ export default function Home() {
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="hero-eyebrow">QUICK ACCESS</p>
+              <p className="eyebrow">
+                FIND YOUR OPPORTUNITY
+              </p>
 
               <h2 className="section-title">
                 Jobs by Qualification
               </h2>
 
               <p className="section-description">
-                Quickly find opportunities based on your
-                educational qualification.
+                Choose your qualification to discover relevant
+                opportunities.
               </p>
             </div>
           </div>
@@ -170,20 +187,87 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BLOGS */}
+      {/* LATEST JOBS */}
       <section className="section section-muted">
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="hero-eyebrow">INSIGHTS</p>
+              <p className="eyebrow">
+                OPPORTUNITIES
+              </p>
 
               <h2 className="section-title">
-                Latest Blogs
+                Latest Jobs
               </h2>
 
               <p className="section-description">
-                Career knowledge and practical advice to help
-                you move forward.
+                Discover recently added opportunities.
+              </p>
+            </div>
+
+            <Link
+              href="/jobs"
+              className="button button-secondary"
+            >
+              View All Jobs
+            </Link>
+          </div>
+
+          <div className="job-list">
+            {jobs.map((job) => (
+              <article
+                className="job-item"
+                key={`${job.company}-${job.title}`}
+              >
+                <div className="job-main">
+                  <span className="job-company">
+                    {job.company}
+                  </span>
+
+                  <h3 className="job-title">
+                    {job.title}
+                  </h3>
+
+                  <div className="job-details">
+                    <span>{job.location}</span>
+                    <span>{job.type}</span>
+                  </div>
+                </div>
+
+                <div className="job-side">
+                  <span className="job-date">
+                    {job.date}
+                  </span>
+
+                  <Link
+                    href="/jobs"
+                    className="job-link"
+                  >
+                    View Job →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ARTICLES */}
+      <section className="section">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">
+                CAREER INSIGHTS
+              </p>
+
+              <h2 className="section-title">
+                Learn. Prepare. Grow.
+              </h2>
+
+              <p className="section-description">
+                Useful information to help you make better
+                career decisions.
               </p>
             </div>
 
@@ -196,40 +280,30 @@ export default function Home() {
           </div>
 
           <div className="card-grid">
-            {blogs.map((blog) => (
-              <article className="card" key={blog.title}>
+            {articles.map((article) => (
+              <article
+                className="card"
+                key={article.title}
+              >
                 <div className="card-content">
-                  <p
-                    style={{
-                      color: "var(--jobsera-blue)",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    {blog.category}
+                  <p className="eyebrow">
+                    {article.category}
                   </p>
 
-                  <h3
-                    className="card-title"
-                    style={{ marginTop: "12px" }}
-                  >
-                    {blog.title}
+                  <h3 className="card-title">
+                    {article.title}
                   </h3>
 
                   <p className="card-description">
-                    {blog.description}
+                    {article.description}
                   </p>
 
-                  <div className="card-meta">
-                    <span className="meta-pill">
-                      Read article
-                    </span>
-
-                    <span className="meta-pill">
-                      {blog.date}
-                    </span>
-                  </div>
+                  <Link
+                    href="/blogs"
+                    className="article-link"
+                  >
+                    Read article →
+                  </Link>
                 </div>
               </article>
             ))}
@@ -237,97 +311,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* JOBS */}
-      <section className="section">
+      {/* NOTIFICATIONS */}
+      <section className="notification-section">
         <div className="container">
-          <div className="section-heading">
+          <div className="notification-card">
             <div>
-              <p className="hero-eyebrow">OPPORTUNITIES</p>
+              <p className="eyebrow">
+                STAY UPDATED
+              </p>
 
-              <h2 className="section-title">
-                Latest Jobs
+              <h2>
+                Don't miss what's next.
               </h2>
 
-              <p className="section-description">
-                Explore recently added opportunities and find
-                a role that matches your skills.
+              <p>
+                Enable Jobsera notifications and get updates
+                about new opportunities and important content.
               </p>
             </div>
 
-            <Link
-              href="/jobs"
-              className="button button-secondary"
-            >
-              View All Jobs
-            </Link>
-          </div>
-
-          <div className="card-grid">
-            {jobs.map((job) => (
-              <article className="card" key={job.title}>
-                <div className="card-content">
-                  <p
-                    style={{
-                      color: "var(--jobsera-blue)",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    {job.company}
-                  </p>
-
-                  <h3
-                    className="card-title"
-                    style={{ marginTop: "12px" }}
-                  >
-                    {job.title}
-                  </h3>
-
-                  <p className="card-description">
-                    {job.description}
-                  </p>
-
-                  <div className="card-meta">
-                    <span className="meta-pill">
-                      {job.location}
-                    </span>
-
-                    <span className="meta-pill">
-                      {job.date}
-                    </span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* NOTIFICATION CTA */}
-      <section className="section section-muted">
-        <div className="container text-center">
-          <h2 className="section-title">
-            Never miss an opportunity.
-          </h2>
-
-          <p
-            className="section-description"
-            style={{
-              marginInline: "auto",
-              marginTop: "12px",
-            }}
-          >
-            Enable Jobsera notifications to stay updated about
-            new opportunities, articles and important updates.
-          </p>
-
-          <div
-            className="hero-actions"
-            style={{
-              justifyContent: "center",
-            }}
-          >
             <button
               type="button"
               className="button button-primary"
@@ -337,6 +339,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }
