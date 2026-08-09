@@ -23,7 +23,6 @@ export default function RootLayout({
         <footer className="site-footer">
   <div className="footer-inner">
 
-    {/* Logo */}
     <div className="footer-brand">
       <img
         src="/jobsera-logo.PNG"
@@ -31,30 +30,21 @@ export default function RootLayout({
         className="footer-logo"
       />
 
-      <div className="footer-red-line"></div>
+      <div className="footer-line"></div>
     </div>
 
-    {/* Navigation Links */}
-    <nav className="footer-links">
-
-      <div className="footer-link-group">
-        <a href="/about">About Us</a>
-        <a href="/contact">Contact Us</a>
-      </div>
-
-      <div className="footer-link-group">
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms &amp; Conditions</a>
-      </div>
-
+    <nav className="footer-links" aria-label="Footer navigation">
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact Us</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms & Conditions</a>
     </nav>
 
-    {/* Gmail */}
     <a
       href="mailto:connectjobsera@gmail.com"
       className="footer-email"
     >
-      <span className="footer-email-icon" aria-hidden="true">
+      <span className="gmail-icon" aria-hidden="true">
         <svg
           width="20"
           height="20"
@@ -65,7 +55,7 @@ export default function RootLayout({
           <path
             d="M3 6.5L12 13L21 6.5"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -76,7 +66,7 @@ export default function RootLayout({
             height="14"
             rx="2"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="2"
           />
         </svg>
       </span>
@@ -84,9 +74,8 @@ export default function RootLayout({
       <span>connectjobsera@gmail.com</span>
     </a>
 
-    {/* Copyright */}
     <div className="footer-bottom">
-      <p>ⓘ 2026 Jobsera. All Rights are Reserved.</p>
+      <span>ⓘ 2026 Jobsera. All Rights are Reserved.</span>
     </div>
 
   </div>
