@@ -31,7 +31,7 @@
 }
 
 /* ================================
-   Reset
+   RESET
 ================================ */
 
 * {
@@ -47,6 +47,7 @@ html {
 body {
   background: var(--background);
   color: var(--text-primary);
+
   font-family:
     Inter,
     ui-sans-serif,
@@ -55,6 +56,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -88,7 +90,7 @@ ol {
 }
 
 /* ================================
-   Global Layout
+   GLOBAL LAYOUT
 ================================ */
 
 .container {
@@ -101,7 +103,7 @@ main {
 }
 
 /* ================================
-   Header
+   HEADER
 ================================ */
 
 .site-header {
@@ -179,10 +181,7 @@ main {
   height: 2px;
 
   border-radius: 999px;
-
   background: currentColor;
-
-  transition: transform var(--transition);
 }
 
 .mobile-menu {
@@ -192,7 +191,6 @@ main {
   right: max(20px, calc((100vw - var(--container)) / 2));
 
   width: 250px;
-
   padding: 7px;
 
   background: #ffffff;
@@ -226,7 +224,7 @@ main {
 }
 
 /* ================================
-   Hero
+   HERO
 ================================ */
 
 .hero {
@@ -242,11 +240,7 @@ main {
       rgba(23, 105, 224, 0.075),
       transparent 32%
     ),
-    linear-gradient(
-      180deg,
-      #ffffff 0%,
-      #f8fbff 100%
-    );
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
 .hero-grid {
@@ -357,6 +351,7 @@ main {
 .button-secondary {
   background: #ffffff;
   color: var(--text-primary);
+
   border: 1px solid var(--border-strong);
 }
 
@@ -365,7 +360,7 @@ main {
   background: var(--surface-blue);
 }
 
-/* Hero Card */
+/* Hero card */
 
 .hero-card {
   padding: 24px;
@@ -374,7 +369,6 @@ main {
   border-radius: var(--radius-xl);
 
   background: #ffffff;
-
   box-shadow: var(--shadow-md);
 }
 
@@ -435,7 +429,7 @@ main {
 }
 
 /* ================================
-   Sections
+   SECTIONS
 ================================ */
 
 .section {
@@ -457,8 +451,8 @@ main {
 
 .section-title {
   font-size: clamp(26px, 4vw, 36px);
-  line-height: 1.12;
 
+  line-height: 1.12;
   letter-spacing: -0.03em;
   font-weight: 800;
 }
@@ -475,7 +469,7 @@ main {
 }
 
 /* ================================
-   Qualification Cards
+   QUALIFICATION CARDS
 ================================ */
 
 .qualification-grid {
@@ -499,6 +493,7 @@ main {
   border-radius: var(--radius-md);
 
   background: #ffffff;
+
   color: var(--text-primary);
 
   text-align: center;
@@ -523,7 +518,7 @@ main {
 }
 
 /* ================================
-   Cards
+   CARDS
 ================================ */
 
 .card-grid {
@@ -541,7 +536,6 @@ main {
   border-radius: var(--radius-md);
 
   background: #ffffff;
-
   box-shadow: var(--shadow-sm);
 
   transition:
@@ -560,8 +554,8 @@ main {
 
 .card-title {
   font-size: 16px;
-  line-height: 1.35;
 
+  line-height: 1.35;
   letter-spacing: -0.01em;
   font-weight: 750;
 }
@@ -596,7 +590,7 @@ main {
 }
 
 /* ================================
-   Content Pages
+   CONTENT PAGES
 ================================ */
 
 .content-page {
@@ -611,8 +605,8 @@ main {
   max-width: 760px;
 
   font-size: clamp(36px, 6vw, 54px);
-  line-height: 1.05;
 
+  line-height: 1.05;
   letter-spacing: -0.04em;
   font-weight: 800;
 }
@@ -670,7 +664,6 @@ main {
   border-radius: var(--radius-lg);
 
   background: var(--surface-blue);
-
   box-shadow: var(--shadow-sm);
 }
 
@@ -685,7 +678,6 @@ main {
   margin-top: 8px;
 
   color: var(--text-secondary);
-
   font-size: 14px;
 }
 
@@ -701,7 +693,7 @@ main {
 }
 
 /* ================================
-   Homepage Job Listings
+   JOB LISTINGS
 ================================ */
 
 .job-list {
@@ -722,7 +714,6 @@ main {
   border-radius: var(--radius-md);
 
   background: #ffffff;
-
   box-shadow: var(--shadow-sm);
 
   transition:
@@ -821,7 +812,7 @@ main {
 }
 
 /* ================================
-   Notification Section
+   NOTIFICATION SECTION
 ================================ */
 
 .notification-section {
@@ -853,8 +844,8 @@ main {
 
 .notification-card h2 {
   font-size: clamp(24px, 4vw, 32px);
-  line-height: 1.15;
 
+  line-height: 1.15;
   letter-spacing: -0.03em;
   font-weight: 800;
 }
@@ -869,7 +860,7 @@ main {
 }
 
 /* ================================
-   Footer
+   FOOTER
 ================================ */
 
 .site-footer {
@@ -887,25 +878,24 @@ main {
 
   margin: 0 auto;
 
-  padding: 70px 0 24px;
+  padding: 62px 0 22px;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
+/* Logo + line */
 
 .footer-brand {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  width: 100%;
 }
 
 .footer-logo {
   width: 105px;
   height: auto;
-
   object-fit: contain;
 }
 
@@ -915,33 +905,31 @@ main {
 
   height: 3px;
 
-  margin-top: 28px;
-  margin-bottom: 34px;
-
-  background: #ed1c24;
+  margin-top: 25px;
 
   border-radius: 999px;
+
+  background: #ed1c24;
 }
 
-/* Footer Links */
+/* Links */
 
 .footer-links {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 
-  gap: 8px;
+  gap: 7px;
 
-  margin-bottom: 34px;
+  margin-top: 34px;
 }
 
 .footer-links a {
-  color: #6b7f9d;
+  color: var(--text-secondary);
 
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-
-  line-height: 1.5;
+  line-height: 1.6;
 
   transition: color var(--transition);
 }
@@ -950,21 +938,20 @@ main {
   color: var(--jobsera-blue);
 }
 
-/* Footer Email */
+/* Email */
 
 .footer-email {
   display: inline-flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 10px;
 
-  margin-bottom: 38px;
+  margin-top: 32px;
 
-  color: #6b7f9d;
+  color: var(--text-secondary);
 
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-
   line-height: 1.5;
 
   transition: color var(--transition);
@@ -982,23 +969,77 @@ main {
   flex-shrink: 0;
 }
 
-/* Footer Copyright */
+/* Copyright */
 
 .footer-bottom {
   width: 100%;
 
-  padding-top: 22px;
+  margin-top: 36px;
+
+  padding-top: 18px;
 
   border-top: 1px solid var(--border);
 
-  color: #8ca0bb;
+  color: var(--text-muted);
 
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
 /* ================================
-   Utility
+   FORMS
+================================ */
+
+.form-group {
+  display: grid;
+  gap: 7px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: var(--text-primary);
+
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.form-input,
+.form-select {
+  height: 44px;
+  padding: 0 12px;
+}
+
+.form-textarea {
+  min-height: 130px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  border-color: var(--jobsera-blue);
+
+  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.1);
+}
+
+/* ================================
+   UTILITIES
 ================================ */
 
 .text-center {
@@ -1014,7 +1055,7 @@ main {
 }
 
 /* ================================
-   Responsive
+   TABLET
 ================================ */
 
 @media (max-width: 900px) {
@@ -1039,6 +1080,10 @@ main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ================================
+   MOBILE
+================================ */
 
 @media (max-width: 640px) {
   :root {
@@ -1125,9 +1170,7 @@ main {
   .job-item {
     align-items: flex-start;
     flex-direction: column;
-
     gap: 14px;
-
     padding: 17px;
   }
 
@@ -1150,13 +1193,18 @@ main {
     flex-direction: column;
 
     gap: 20px;
-
     padding: 23px;
   }
 
+  /* Footer */
+
+  .site-footer {
+    margin-top: 64px;
+  }
+
   .footer-inner {
-    width: min(calc(100% - 48px), 1400px);
-    padding: 55px 0 22px;
+    width: min(calc(100% - 32px), 1400px);
+    padding: 52px 0 20px;
   }
 
   .footer-logo {
@@ -1165,13 +1213,12 @@ main {
 
   .footer-line {
     width: 250px;
-
-    margin-top: 24px;
-    margin-bottom: 30px;
+    margin-top: 22px;
   }
 
   .footer-links {
-    gap: 7px;
+    margin-top: 30px;
+    gap: 6px;
   }
 
   .footer-links a,
@@ -1180,10 +1227,13 @@ main {
   }
 
   .footer-email {
-    margin-bottom: 32px;
+    margin-top: 28px;
   }
 
   .footer-bottom {
-    font-size: 13px;
+    margin-top: 32px;
+    padding-top: 16px;
+
+    font-size: 11px;
   }
 }
