@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 
 const menuItems = [
   { label: "Home", href: "/" },
@@ -43,21 +43,21 @@ export default function Header() {
             <span />
           </span>
         </button>
-      </div>
 
-      {menuOpen && (
-        <nav className="mobile-menu" aria-label="Main navigation">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      )}
+        {menuOpen && (
+          <nav className="mobile-menu" aria-label="Main navigation">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
+      </div>
     </header>
   );
 }
