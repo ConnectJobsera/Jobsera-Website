@@ -1386,3 +1386,148 @@ main {
     max-height: 36px;
   }
 }
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.site-footer {
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 80px;
+}
+
+.footer-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 55px 24px 22px;
+  box-sizing: border-box;
+}
+
+/* Logo */
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-logo {
+  width: 105px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.footer-red-line {
+  width: 245px;
+  max-width: 100%;
+  height: 3px;
+  background: #ed1c24;
+  border-radius: 10px;
+  margin-top: 14px;
+}
+
+/* Links */
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.footer-link-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.footer-link-group + .footer-link-group {
+  margin-top: 8px;
+}
+
+.footer-link-group a {
+  color: #667892;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.7;
+  transition: color 0.2s ease;
+}
+
+.footer-link-group a:hover {
+  color: #1769e0;
+}
+
+/* Gmail */
+
+.footer-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+
+  color: #667892;
+  text-decoration: none;
+
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+
+  transition: color 0.2s ease;
+}
+
+.footer-email:hover {
+  color: #1769e0;
+}
+
+.footer-email-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Copyright divider */
+
+.footer-bottom {
+  border-top: 1px solid #e1e6ed;
+  margin-top: 30px;
+  padding-top: 18px;
+}
+
+.footer-bottom p {
+  margin: 0;
+  color: #8a99ad;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .footer-inner {
+    padding: 45px 24px 20px;
+  }
+
+  .footer-logo {
+    width: 95px;
+  }
+
+  .footer-red-line {
+    width: 210px;
+  }
+
+  .footer-link-group a,
+  .footer-email {
+    font-size: 15px;
+  }
+
+  .footer-bottom p {
+    font-size: 13px;
+  }
+}i
