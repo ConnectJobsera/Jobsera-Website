@@ -21,69 +21,76 @@ export default function RootLayout({
         <main>{children}</main>
 
         <footer className="site-footer">
-          <div className="container footer-inner">
-            <div className="footer-brand">
-              <img
-                src="/jobsera-logo.PNG"
-                alt="Jobsera"
-                className="footer-logo"
-              />
+  <div className="footer-inner">
 
-              <p>
-                Career knowledge and opportunities that matter.
-              </p>
-            </div>
+    {/* Logo */}
+    <div className="footer-brand">
+      <img
+        src="/jobsera-logo.PNG"
+        alt="Jobsera"
+        className="footer-logo"
+      />
 
-            <nav className="footer-links" aria-label="Footer navigation">
-              <a href="/about">About Us</a>
-              <a href="/privacy">Privacy Policy</a>
-              <a href="/contact">Contact Us</a>
-              <a href="/terms">Terms &amp; Conditions</a>
-            </nav>
+      <div className="footer-red-line"></div>
+    </div>
 
-            <div className="footer-contact">
-              <a
-                href="mailto:connectjobsera@gmail.com"
-                aria-label="Email Jobsera at connectjobsera@gmail.com"
-              >
-                <span className="gmail-icon" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3 5.5L12 12.5L21 5.5"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <rect
-                      x="3"
-                      y="5"
-                      width="18"
-                      height="14"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                  </svg>
-                </span>
+    {/* Navigation Links */}
+    <nav className="footer-links">
 
-                <span>connectjobsera@gmail.com</span>
-              </a>
-            </div>
+      <div className="footer-link-group">
+        <a href="/about">About Us</a>
+        <a href="/contact">Contact Us</a>
+      </div>
 
-            <div className="footer-bottom">
-              <span>
-                ① 2026 Jobsera. All Rights are Reserved.
-              </span>
-            </div>
-          </div>
-        </footer>
+      <div className="footer-link-group">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+      </div>
+
+    </nav>
+
+    {/* Gmail */}
+    <a
+      href="mailto:connectjobsera@gmail.com"
+      className="footer-email"
+    >
+      <span className="footer-email-icon" aria-hidden="true">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 6.5L12 13L21 6.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="14"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+        </svg>
+      </span>
+
+      <span>connectjobsera@gmail.com</span>
+    </a>
+
+    {/* Copyright */}
+    <div className="footer-bottom">
+      <p>ⓘ 2026 Jobsera. All Rights are Reserved.</p>
+    </div>
+
+  </div>
+</footer>
       </body>
     </html>
   );
