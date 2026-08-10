@@ -3,23 +3,23 @@ import Link from "next/link";
 const qualifications = [
   {
     label: "8th Pass",
-    href: "/jobs/8th-pass",
+    href: "/jobs?qualification=8th-pass",
   },
   {
     label: "10th Pass",
-    href: "/jobs/10th-pass",
+    href: "/jobs?qualification=10th-pass",
   },
   {
     label: "12th Pass",
-    href: "/jobs/12th-pass",
+    href: "/jobs?qualification=12th-pass",
   },
   {
     label: "Diploma",
-    href: "/jobs/diploma",
+    href: "/jobs?qualification=diploma",
   },
   {
     label: "Graduate",
-    href: "/jobs/graduate",
+    href: "/jobs?qualification=graduate",
   },
 ];
 
