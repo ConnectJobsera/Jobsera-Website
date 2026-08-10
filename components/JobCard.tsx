@@ -1,26 +1,30 @@
+import Link from "next/link";
+
 type JobCardProps = {
+  id: string;
   company: string;
   title: string;
   location: string;
   type: string;
   experience: string;
-  posted: string;
+  date?: string;
 };
 
 export default function JobCard({
+  id,
   company,
   title,
   location,
   type,
   experience,
-  posted,
+  date,
 }: JobCardProps) {
   return (
     <article className="job-item">
       <div className="job-main">
         <span className="job-company">{company}</span>
 
-        <h2 className="job-title">{title}</h2>
+        <h3 className="job-title">{title}</h3>
 
         <div className="job-details">
           <span>{location}</span>
@@ -30,11 +34,11 @@ export default function JobCard({
       </div>
 
       <div className="job-side">
-        <span className="job-date">{posted}</span>
+        {date && <span className="job-date">{date}</span>}
 
-        <a href="#" className="job-link">
-          View Opportunity →
-        </a>
+        <Link href={`/jobs/${id}`} className="job-link">
+          View Job →
+        </Link>
       </div>
     </article>
   );
