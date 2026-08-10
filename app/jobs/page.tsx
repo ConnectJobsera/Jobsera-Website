@@ -6,36 +6,57 @@ import JobFilters from "../../components/JobFilters";
 
 const jobs = [
   {
-    company: "Jobsera",
+    id: "technova-frontend-developer",
+    company: "TECHNOVA",
     title: "Frontend Developer",
     location: "Remote",
-    type: "Full-time",
+    type: "Full Time",
     experience: "Entry Level",
-    posted: "Recently posted",
+    date: "Recently added",
   },
   {
-    company: "Jobsera",
+    id: "digital-solutions-customer-support",
+    company: "DIGITAL SOLUTIONS",
+    title: "Customer Support Executive",
+    location: "Delhi",
+    type: "Full Time",
+    experience: "0–2 years",
+    date: "Recently added",
+  },
+  {
+    id: "startup-hub-marketing-intern",
+    company: "STARTUP HUB",
     title: "Marketing Intern",
-    location: "Delhi NCR",
+    location: "Noida",
     type: "Internship",
-    experience: "Fresher",
-    posted: "Recently posted",
+    experience: "Entry Level",
+    date: "Recently added",
   },
   {
-    company: "Jobsera",
-    title: "Content & Social Media Intern",
-    location: "Remote",
-    type: "Internship",
-    experience: "Fresher",
-    posted: "Recently posted",
+    id: "jobsera-content-writer",
+    company: "JOBSERA",
+    title: "Content Writer",
+    location: "Delhi",
+    type: "Part Time",
+    experience: "0–2 years",
+    date: "Recently added",
+  },
+  {
+    id: "digital-solutions-sales-executive",
+    company: "DIGITAL SOLUTIONS",
+    title: "Sales Executive",
+    location: "Gurugram",
+    type: "Full Time",
+    experience: "1–3 years",
+    date: "Recently added",
   },
 ];
 
 export default function JobsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [search, setSearch] = useState("");
 
   const filteredJobs = useMemo(() => {
-    const query = searchQuery.toLowerCase();
+    const query = search.trim().toLowerCase();
 
     if (!query) {
       return jobs;
@@ -48,79 +69,66 @@ export default function JobsPage() {
         job.location,
         job.type,
         job.experience,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(query)
+      ].some((value) => value.toLowerCase().includes(query))
     );
-  }, [searchQuery]);
+  }, [search]);
 
   return (
-    <main>
-      <section className="content-page">
-        <div className="container">
-          <span className="eyebrow">JOB OPPORTUNITIES</span>
+    <main className="content-page">
+      <div className="container">
+        <p className="eyebrow">OPPORTUNITIES</p>
 
-          <h1>Find your next opportunity.</h1>
+        <h1>Find Your Next Opportunity</h1>
 
-          <p className="page-intro">
-            Explore job opportunities, internships and career openings
-            designed to help you take the next step in your professional
-            journey.
-          </p>
+        <p className="page-intro">
+          Explore job opportunities and find roles that match your
+          skills, experience and career goals.
+        </p>
 
-          <div style={{ marginTop: "34px" }}>
-            <JobFilters onSearch={setSearchQuery} />
+        <JobFilters value={search} onChange={setSearch} />
+
+        <section className="section" style={{ padding: "38px 0 0" }}>
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">AVAILABLE JOBS</p>
+
+              <h2 className="section-title">
+                {filteredJobs.length > 0
+                  ? `${filteredJobs.length} ${
+                      filteredJobs.length === 1 ? "Opportunity" : "Opportunities"
+                    }`
+                  : "No Opportunities Found"}
+              </h2>
+
+              <p className="section-description">
+                {search
+                  ? `Showing results matching "${search}".`
+                  : "Browse the latest opportunities available on Jobsera."}
+              </p>
+            </div>
           </div>
 
-          <div
-            className="job-list"
-            style={{ marginTop: "28px" }}
-          >
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <JobCard
-                  key={`${job.company}-${job.title}`}
-                  company={job.company}
-                  title={job.title}
-                  location={job.location}
-                  type={job.type}
-                  experience={job.experience}
-                  posted={job.posted}
-                />
-              ))
-            ) : (
-              <div className="contact-card">
-                <h2>No opportunities found</h2>
+          {filteredJobs.length > 0 ? (
+            <div className="job-list">
+              {filteredJobs.map((job) => (
+                <JobCard key={job.id} {...job} />
+              ))}
+            </div>
+          ) : (
+            <div className="card">
+              <div className="card-content">
+                <h3 className="card-title">
+                  No jobs match your search.
+                </h3>
 
-                <p>
-                  Try searching for a different job title, company,
-                  location or keyword.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <section
-            className="notification-section"
-            style={{ marginTop: "56px" }}
-          >
-            <div className="notification-card">
-              <div>
-                <span className="eyebrow">STAY UPDATED</span>
-
-                <h2>More opportunities are coming.</h2>
-
-                <p>
-                  We're continuously working to bring more relevant
-                  opportunities to Jobsera. Check back soon for new
-                  openings.
+                <p className="card-description">
+                  Try another keyword, company, location or job type.
                 </p>
               </div>
             </div>
-          </section>
-        </div>
-      </section>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
