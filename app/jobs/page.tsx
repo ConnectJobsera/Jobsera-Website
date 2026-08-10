@@ -43,6 +43,7 @@ const jobs = [
     location: "Delhi",
     type: "Part Time",
     experience: "Diploma",
+    qualification: "Diploma",
     date: "Recently added",
   },
   {
