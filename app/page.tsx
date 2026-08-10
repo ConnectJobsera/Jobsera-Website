@@ -25,42 +25,51 @@ const qualifications = [
 
 const jobs = [
   {
+    id: "technova-frontend-developer",
     company: "TECHNOVA",
     title: "Frontend Developer",
     location: "Remote",
     type: "Full Time",
+    experience: "Entry Level",
     date: "Recently added",
   },
   {
+    id: "digital-solutions-customer-support",
     company: "DIGITAL SOLUTIONS",
     title: "Customer Support Executive",
     location: "Delhi",
     type: "Full Time",
+    experience: "0–2 years",
     date: "Recently added",
   },
   {
+    id: "startup-hub-marketing-intern",
     company: "STARTUP HUB",
     title: "Marketing Intern",
     location: "Noida",
     type: "Internship",
+    experience: "Entry Level",
     date: "Recently added",
   },
 ];
 
 const articles = [
   {
+    slug: "how-to-build-a-resume-that-gets-noticed",
     category: "CAREER GUIDE",
     title: "How to Build a Resume That Gets Noticed",
     description:
       "Simple ways to make your resume clearer, more relevant and easier for employers to understand.",
   },
   {
+    slug: "skills-that-can-help-you-grow",
     category: "CAREER GROWTH",
     title: "Skills That Can Help You Grow",
     description:
       "Explore practical skills that can improve your confidence and help you prepare for today's opportunities.",
   },
   {
+    slug: "how-to-find-the-right-job",
     category: "JOB SEARCH",
     title: "How to Find the Right Job",
     description:
@@ -73,16 +82,16 @@ export default function Home() {
     <>
       {/* HERO */}
       <section className="hero">
-        <div className="container hero-grid">
+        <div className="container">
           <div className="hero-content">
             <p className="hero-eyebrow">
               YOUR CAREER STARTS HERE
             </p>
 
             <h1 className="hero-title">
-              Find the right
+              Stay informed.
               <br />
-              <span>opportunity.</span>
+              <span>Find your next opportunity.</span>
             </h1>
 
             <p className="hero-description">
@@ -105,49 +114,38 @@ export default function Home() {
                 Career Insights
               </Link>
             </div>
-          </div>
 
-          <div className="hero-card">
-            <div className="hero-card-header">
-              <h2 className="hero-card-title">
-                Explore Jobsera
-              </h2>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+                marginTop: "28px",
+                maxWidth: "680px",
+              }}
+            >
+              <Link
+                href="/jobs"
+                className="form-input"
+                style={{
+                  flex: "1 1 300px",
+                  minHeight: "46px",
+                  height: "46px",
+                  display: "flex",
+                  alignItems: "center",
+                  color: "var(--text-muted)",
+                  cursor: "pointer",
+                }}
+              >
+                Search jobs, companies or locations
+              </Link>
 
-              <span className="hero-card-badge">
-                Updated
-              </span>
-            </div>
-
-            <div className="hero-stat-list">
-              <div className="hero-stat">
-                <span className="hero-stat-label">
-                  Latest opportunities
-                </span>
-
-                <span className="hero-stat-value">
-                  Explore →
-                </span>
-              </div>
-
-              <div className="hero-stat">
-                <span className="hero-stat-label">
-                  Career articles
-                </span>
-
-                <span className="hero-stat-value">
-                  Read →
-                </span>
-              </div>
-
-              <div className="hero-stat">
-                <span className="hero-stat-label">
-                  Jobs by qualification
-                </span>
-
-                <span className="hero-stat-value">
-                  Browse →
-                </span>
-              </div>
+              <Link
+                href="/jobs"
+                className="button button-primary"
+              >
+                Search
+              </Link>
             </div>
           </div>
         </div>
@@ -217,7 +215,7 @@ export default function Home() {
             {jobs.map((job) => (
               <article
                 className="job-item"
-                key={`${job.company}-${job.title}`}
+                key={job.id}
               >
                 <div className="job-main">
                   <span className="job-company">
@@ -231,6 +229,7 @@ export default function Home() {
                   <div className="job-details">
                     <span>{job.location}</span>
                     <span>{job.type}</span>
+                    <span>{job.experience}</span>
                   </div>
                 </div>
 
@@ -240,7 +239,7 @@ export default function Home() {
                   </span>
 
                   <Link
-                    href="/jobs"
+                    href={`/jobs/${job.id}`}
                     className="job-link"
                   >
                     View Job →
@@ -283,7 +282,7 @@ export default function Home() {
             {articles.map((article) => (
               <article
                 className="card"
-                key={article.title}
+                key={article.slug}
               >
                 <div className="card-content">
                   <p className="eyebrow">
@@ -299,7 +298,7 @@ export default function Home() {
                   </p>
 
                   <Link
-                    href="/blogs"
+                    href={`/blogs/${article.slug}`}
                     className="article-link"
                   >
                     Read article →
