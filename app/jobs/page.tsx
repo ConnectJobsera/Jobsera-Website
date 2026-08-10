@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import JobCard from "../../components/JobCard";
 import JobFilters from "../../components/JobFilters";
@@ -66,12 +66,14 @@ const qualificationMap: Record<string, string> = {
   graduate: "Graduate",
 };
 
-export default function JobsPage() {
+function JobsPageContent() {
   const searchParams = useSearchParams();
 
-  const initialSearch = searchParams.get("search") || "";
   const initialQualification =
     searchParams.get("qualification") || "";
+
+  const initialSearch =
+    searchParams.get("search") || "";
 
   const [search, setSearch] = useState(initialSearch);
 
@@ -139,25 +141,6 @@ export default function JobsPage() {
           </div>
         )}
 
-        {search && (
-          <div
-            style={{
-              marginTop: selectedQualification ? "10px" : "18px",
-              padding: "12px 14px",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-md)",
-              background: "var(--surface)",
-              color: "var(--text-secondary)",
-              fontSize: "13px",
-            }}
-          >
-            Searching for{" "}
-            <strong style={{ color: "var(--text-primary)" }}>
-              {search}
-            </strong>
-          </div>
-        )}
-
         <section
           className="section"
           style={{ padding: "38px 0 0" }}
@@ -218,5 +201,27 @@ export default function JobsPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="content-page">
+          <div className="container">
+            <p className="eyebrow">OPPORTUNITIES</p>
+
+            <h1>Find Your Next Opportunity</h1>
+
+            <p className="page-intro">
+              Loading opportunities...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <JobsPageContent />
+    </Suspense>
   );
 }
