@@ -1,4 +1,8 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import JobCard from "../../components/JobCard";
+import JobFilters from "../../components/JobFilters";
 
 const jobs = [
   {
@@ -28,6 +32,29 @@ const jobs = [
 ];
 
 export default function JobsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredJobs = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) {
+      return jobs;
+    }
+
+    return jobs.filter((job) =>
+      [
+        job.company,
+        job.title,
+        job.location,
+        job.type,
+        job.experience,
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(query)
+    );
+  }, [searchQuery]);
+
   return (
     <main>
       <section className="content-page">
@@ -42,18 +69,36 @@ export default function JobsPage() {
             journey.
           </p>
 
-          <div className="job-list" style={{ marginTop: "42px" }}>
-            {jobs.map((job) => (
-              <JobCard
-                key={`${job.company}-${job.title}`}
-                company={job.company}
-                title={job.title}
-                location={job.location}
-                type={job.type}
-                experience={job.experience}
-                posted={job.posted}
-              />
-            ))}
+          <div style={{ marginTop: "34px" }}>
+            <JobFilters onSearch={setSearchQuery} />
+          </div>
+
+          <div
+            className="job-list"
+            style={{ marginTop: "28px" }}
+          >
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <JobCard
+                  key={`${job.company}-${job.title}`}
+                  company={job.company}
+                  title={job.title}
+                  location={job.location}
+                  type={job.type}
+                  experience={job.experience}
+                  posted={job.posted}
+                />
+              ))
+            ) : (
+              <div className="contact-card">
+                <h2>No opportunities found</h2>
+
+                <p>
+                  Try searching for a different job title, company,
+                  location or keyword.
+                </p>
+              </div>
+            )}
           </div>
 
           <section
