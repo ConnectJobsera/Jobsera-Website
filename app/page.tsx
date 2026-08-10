@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { FormEvent, useState } from "react";
 
 const qualifications = [
   {
@@ -78,6 +81,20 @@ const articles = [
 ];
 
 export default function Home() {
+  const [search, setSearch] = useState("");
+
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const query = search.trim();
+
+    if (query) {
+      window.location.href = `/jobs?search=${encodeURIComponent(query)}`;
+    } else {
+      window.location.href = "/jobs";
+    }
+  }
+
   return (
     <>
       {/* HERO */}
@@ -115,7 +132,8 @@ export default function Home() {
               </Link>
             </div>
 
-            <div
+            <form
+              onSubmit={handleSearch}
               style={{
                 display: "flex",
                 flexWrap: "wrap",
@@ -124,29 +142,27 @@ export default function Home() {
                 maxWidth: "680px",
               }}
             >
-              <Link
-                href="/jobs"
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search jobs, companies or locations"
+                aria-label="Search jobs, companies or locations"
                 className="form-input"
                 style={{
                   flex: "1 1 300px",
                   minHeight: "46px",
                   height: "46px",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "var(--text-muted)",
-                  cursor: "pointer",
                 }}
-              >
-                Search jobs, companies or locations
-              </Link>
+              />
 
-              <Link
-                href="/jobs"
+              <button
+                type="submit"
                 className="button button-primary"
               >
                 Search
-              </Link>
-            </div>
+              </button>
+            </form>
           </div>
         </div>
       </section>
