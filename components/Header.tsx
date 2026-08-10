@@ -20,7 +20,7 @@ export default function Header() {
         <Link
           href="/"
           className="logo-link"
-          aria-label="Jobsera Home"
+          aria-label="Jobsera home"
           onClick={() => setMenuOpen(false)}
         >
           <img
@@ -30,33 +30,40 @@ export default function Header() {
           />
         </Link>
 
-        <button
-          type="button"
-          className="menu-button"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((current) => !current)}
-        >
-          <span className="menu-icon" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-        </button>
+        <div className="header-menu-wrapper">
+          <button
+            type="button"
+            className="menu-button"
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={menuOpen}
+            aria-controls="jobsera-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className="menu-icon" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
 
-        {menuOpen && (
-          <nav className="mobile-menu" aria-label="Main navigation">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        )}
+          {menuOpen && (
+            <nav
+              id="jobsera-navigation"
+              className="mobile-menu"
+              aria-label="Main navigation"
+            >
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
     </header>
   );
