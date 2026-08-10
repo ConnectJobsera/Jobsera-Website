@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import JobCard from "../../components/JobCard";
 import JobFilters from "../../components/JobFilters";
 
@@ -12,6 +13,7 @@ const jobs = [
     location: "Remote",
     type: "Full Time",
     experience: "Entry Level",
+    qualification: "Graduate",
     date: "Recently added",
   },
   {
@@ -21,6 +23,7 @@ const jobs = [
     location: "Delhi",
     type: "Full Time",
     experience: "0–2 years",
+    qualification: "12th Pass",
     date: "Recently added",
   },
   {
@@ -30,6 +33,7 @@ const jobs = [
     location: "Noida",
     type: "Internship",
     experience: "Entry Level",
+    qualification: "Graduate",
     date: "Recently added",
   },
   {
@@ -38,7 +42,7 @@ const jobs = [
     title: "Content Writer",
     location: "Delhi",
     type: "Part Time",
-    experience: "0–2 years",
+    experience: "Diploma",
     date: "Recently added",
   },
   {
@@ -48,30 +52,54 @@ const jobs = [
     location: "Gurugram",
     type: "Full Time",
     experience: "1–3 years",
+    qualification: "10th Pass",
     date: "Recently added",
   },
 ];
 
+const qualificationMap: Record<string, string> = {
+  "8th-pass": "8th Pass",
+  "10th-pass": "10th Pass",
+  "12th-pass": "12th Pass",
+  diploma: "Diploma",
+  graduate: "Graduate",
+};
+
 export default function JobsPage() {
+  const searchParams = useSearchParams();
+
+  const initialQualification =
+    searchParams.get("qualification") || "";
+
   const [search, setSearch] = useState("");
+
+  const selectedQualification =
+    qualificationMap[initialQualification] || "";
 
   const filteredJobs = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    if (!query) {
-      return jobs;
-    }
+    return jobs.filter((job) => {
+      const matchesSearch =
+        !query ||
+        [
+          job.company,
+          job.title,
+          job.location,
+          job.type,
+          job.experience,
+          job.qualification,
+        ].some((value) =>
+          value.toLowerCase().includes(query)
+        );
 
-    return jobs.filter((job) =>
-      [
-        job.company,
-        job.title,
-        job.location,
-        job.type,
-        job.experience,
-      ].some((value) => value.toLowerCase().includes(query))
-    );
-  }, [search]);
+      const matchesQualification =
+        !selectedQualification ||
+        job.qualification === selectedQualification;
+
+      return matchesSearch && matchesQualification;
+    });
+  }, [search, selectedQualification]);
 
   return (
     <main className="content-page">
@@ -85,9 +113,34 @@ export default function JobsPage() {
           skills, experience and career goals.
         </p>
 
-        <JobFilters value={search} onChange={setSearch} />
+        <JobFilters
+          value={search}
+          onChange={setSearch}
+        />
 
-        <section className="section" style={{ padding: "38px 0 0" }}>
+        {selectedQualification && (
+          <div
+            style={{
+              marginTop: "18px",
+              padding: "12px 14px",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              background: "var(--surface-blue)",
+              color: "var(--text-secondary)",
+              fontSize: "13px",
+            }}
+          >
+            Showing jobs for{" "}
+            <strong style={{ color: "var(--text-primary)" }}>
+              {selectedQualification}
+            </strong>
+          </div>
+        )}
+
+        <section
+          className="section"
+          style={{ padding: "38px 0 0" }}
+        >
           <div className="section-heading">
             <div>
               <p className="eyebrow">AVAILABLE JOBS</p>
@@ -95,7 +148,9 @@ export default function JobsPage() {
               <h2 className="section-title">
                 {filteredJobs.length > 0
                   ? `${filteredJobs.length} ${
-                      filteredJobs.length === 1 ? "Opportunity" : "Opportunities"
+                      filteredJobs.length === 1
+                        ? "Opportunity"
+                        : "Opportunities"
                     }`
                   : "No Opportunities Found"}
               </h2>
@@ -103,6 +158,8 @@ export default function JobsPage() {
               <p className="section-description">
                 {search
                   ? `Showing results matching "${search}".`
+                  : selectedQualification
+                  ? `Browse available ${selectedQualification.toLowerCase()} opportunities.`
                   : "Browse the latest opportunities available on Jobsera."}
               </p>
             </div>
@@ -111,7 +168,16 @@ export default function JobsPage() {
           {filteredJobs.length > 0 ? (
             <div className="job-list">
               {filteredJobs.map((job) => (
-                <JobCard key={job.id} {...job} />
+                <JobCard
+                  key={job.id}
+                  id={job.id}
+                  company={job.company}
+                  title={job.title}
+                  location={job.location}
+                  type={job.type}
+                  experience={job.experience}
+                  date={job.date}
+                />
               ))}
             </div>
           ) : (
@@ -122,7 +188,8 @@ export default function JobsPage() {
                 </h3>
 
                 <p className="card-description">
-                  Try another keyword, company, location or job type.
+                  Try another keyword or choose a different
+                  qualification.
                 </p>
               </div>
             </div>
