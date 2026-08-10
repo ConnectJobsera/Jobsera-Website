@@ -82,6 +82,8 @@ const articles = [
 
 export default function Home() {
   const [search, setSearch] = useState("");
+  const [notificationMessage, setNotificationMessage] =
+    useState("");
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,6 +95,12 @@ export default function Home() {
     } else {
       window.location.href = "/jobs";
     }
+  }
+
+  function handleNotifications() {
+    setNotificationMessage(
+      "Notifications will be available soon."
+    );
   }
 
   return (
@@ -343,11 +351,25 @@ export default function Home() {
                 Enable Jobsera notifications and get updates
                 about new opportunities and important content.
               </p>
+
+              {notificationMessage && (
+                <p
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "14px",
+                    color: "var(--text-secondary)",
+                  }}
+                  role="status"
+                >
+                  {notificationMessage}
+                </p>
+              )}
             </div>
 
             <button
               type="button"
               className="button button-primary"
+              onClick={handleNotifications}
             >
               Enable Notifications
             </button>
