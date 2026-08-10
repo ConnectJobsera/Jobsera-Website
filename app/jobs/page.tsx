@@ -69,10 +69,11 @@ const qualificationMap: Record<string, string> = {
 export default function JobsPage() {
   const searchParams = useSearchParams();
 
+  const initialSearch = searchParams.get("search") || "";
   const initialQualification =
     searchParams.get("qualification") || "";
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
 
   const selectedQualification =
     qualificationMap[initialQualification] || "";
@@ -134,6 +135,25 @@ export default function JobsPage() {
             Showing jobs for{" "}
             <strong style={{ color: "var(--text-primary)" }}>
               {selectedQualification}
+            </strong>
+          </div>
+        )}
+
+        {search && (
+          <div
+            style={{
+              marginTop: selectedQualification ? "10px" : "18px",
+              padding: "12px 14px",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              background: "var(--surface)",
+              color: "var(--text-secondary)",
+              fontSize: "13px",
+            }}
+          >
+            Searching for{" "}
+            <strong style={{ color: "var(--text-primary)" }}>
+              {search}
             </strong>
           </div>
         )}
