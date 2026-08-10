@@ -1,3 +1,5 @@
+import JobCard from "../../components/JobCard";
+
 const jobs = [
   {
     company: "Jobsera",
@@ -42,31 +44,22 @@ export default function JobsPage() {
 
           <div className="job-list" style={{ marginTop: "42px" }}>
             {jobs.map((job) => (
-              <article className="job-item" key={job.title}>
-                <div className="job-main">
-                  <span className="job-company">{job.company}</span>
-
-                  <h2 className="job-title">{job.title}</h2>
-
-                  <div className="job-details">
-                    <span>{job.location}</span>
-                    <span>{job.type}</span>
-                    <span>{job.experience}</span>
-                  </div>
-                </div>
-
-                <div className="job-side">
-                  <span className="job-date">{job.posted}</span>
-
-                  <a href="#" className="job-link">
-                    View Opportunity →
-                  </a>
-                </div>
-              </article>
+              <JobCard
+                key={`${job.company}-${job.title}`}
+                company={job.company}
+                title={job.title}
+                location={job.location}
+                type={job.type}
+                experience={job.experience}
+                posted={job.posted}
+              />
             ))}
           </div>
 
-          <section className="notification-section" style={{ marginTop: "56px" }}>
+          <section
+            className="notification-section"
+            style={{ marginTop: "56px" }}
+          >
             <div className="notification-card">
               <div>
                 <span className="eyebrow">STAY UPDATED</span>
