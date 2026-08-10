@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BlogCard from "../../components/BlogCard";
 
 const articles = [
   {
@@ -48,7 +49,6 @@ const articles = [
 export default function BlogsPage() {
   return (
     <>
-      {/* PAGE HEADER */}
       <section className="content-page">
         <div className="container">
           <p className="eyebrow">CAREER INSIGHTS</p>
@@ -62,7 +62,6 @@ export default function BlogsPage() {
         </div>
       </section>
 
-      {/* ARTICLES */}
       <section className="section">
         <div className="container">
           <div className="section-heading">
@@ -82,30 +81,18 @@ export default function BlogsPage() {
 
           <div className="card-grid">
             {articles.map((article) => (
-              <article className="card" key={article.slug}>
-                <div className="card-content">
-                  <p className="eyebrow">{article.category}</p>
-
-                  <h2 className="card-title">{article.title}</h2>
-
-                  <p className="card-description">
-                    {article.description}
-                  </p>
-
-                  <Link
-                    href={`/blogs/${article.slug}`}
-                    className="article-link"
-                  >
-                    Read article →
-                  </Link>
-                </div>
-              </article>
+              <BlogCard
+                key={article.slug}
+                category={article.category}
+                title={article.title}
+                description={article.description}
+                slug={article.slug}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="notification-section">
         <div className="container">
           <div className="notification-card">
