@@ -1,62 +1,26 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import JobCard from "../../components/JobCard";
 import JobFilters from "../../components/JobFilters";
+import { createClient } from "../../lib/supabase/client";
 
-const jobs = [
-  {
-    id: "technova-frontend-developer",
-    company: "TECHNOVA",
-    title: "Frontend Developer",
-    location: "Remote",
-    type: "Full Time",
-    experience: "Entry Level",
-    qualification: "Graduate",
-    date: "Recently added",
-  },
-  {
-    id: "digital-solutions-customer-support",
-    company: "DIGITAL SOLUTIONS",
-    title: "Customer Support Executive",
-    location: "Delhi",
-    type: "Full Time",
-    experience: "0–2 years",
-    qualification: "12th Pass",
-    date: "Recently added",
-  },
-  {
-    id: "startup-hub-marketing-intern",
-    company: "STARTUP HUB",
-    title: "Marketing Intern",
-    location: "Noida",
-    type: "Internship",
-    experience: "Entry Level",
-    qualification: "Graduate",
-    date: "Recently added",
-  },
-  {
-    id: "jobsera-content-writer",
-    company: "JOBSERA",
-    title: "Content Writer",
-    location: "Delhi",
-    type: "Part Time",
-    experience: "Diploma",
-    qualification: "Diploma",
-    date: "Recently added",
-  },
-  {
-    id: "digital-solutions-sales-executive",
-    company: "DIGITAL SOLUTIONS",
-    title: "Sales Executive",
-    location: "Gurugram",
-    type: "Full Time",
-    experience: "1–3 years",
-    qualification: "10th Pass",
-    date: "Recently added",
-  },
-];
+type Job = {
+  id: string;
+  company: string;
+  title: string;
+  location: string;
+  type: string;
+  experience: string;
+  qualification: string;
+  created_at: string;
+};
 
 const qualificationMap: Record<string, string> = {
   "8th-pass": "8th Pass",
@@ -76,9 +40,40 @@ function JobsPageContent() {
     searchParams.get("search") || "";
 
   const [search, setSearch] = useState(initialSearch);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const selectedQualification =
     qualificationMap[initialQualification] || "";
+
+  useEffect(() => {
+    async function loadJobs() {
+      const supabase = createClient();
+
+      const { data, error } = await supabase
+        .from("jobs")
+        .select(
+          "id, company, title, location, type, experience, qualification, created_at"
+        )
+        .eq("is_active", true)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) {
+        console.error("Error loading jobs:", error);
+        setError("Unable to load jobs right now.");
+        setJobs([]);
+      } else {
+        setJobs(data || []);
+      }
+
+      setLoading(false);
+    }
+
+    loadJobs();
+  }, []);
 
   const filteredJobs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -103,7 +98,47 @@ function JobsPageContent() {
 
       return matchesSearch && matchesQualification;
     });
-  }, [search, selectedQualification]);
+  }, [jobs, search, selectedQualification]);
+
+  if (loading) {
+    return (
+      <main className="content-page">
+        <div className="container">
+          <p className="eyebrow">OPPORTUNITIES</p>
+
+          <h1>Find Your Next Opportunity</h1>
+
+          <p className="page-intro">
+            Loading opportunities...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="content-page">
+        <div className="container">
+          <p className="eyebrow">OPPORTUNITIES</p>
+
+          <h1>Find Your Next Opportunity</h1>
+
+          <div className="card">
+            <div className="card-content">
+              <h3 className="card-title">
+                Unable to load jobs
+              </h3>
+
+              <p className="card-description">
+                {error}
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="content-page">
@@ -113,8 +148,8 @@ function JobsPageContent() {
         <h1>Find Your Next Opportunity</h1>
 
         <p className="page-intro">
-          Explore job opportunities and find roles that match your
-          skills, experience and career goals.
+          Explore job opportunities and find roles that match
+          your skills, experience and career goals.
         </p>
 
         <JobFilters
@@ -135,7 +170,11 @@ function JobsPageContent() {
             }}
           >
             Showing jobs for{" "}
-            <strong style={{ color: "var(--text-primary)" }}>
+            <strong
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
               {selectedQualification}
             </strong>
           </div>
@@ -143,11 +182,15 @@ function JobsPageContent() {
 
         <section
           className="section"
-          style={{ padding: "38px 0 0" }}
+          style={{
+            padding: "38px 0 0",
+          }}
         >
           <div className="section-heading">
             <div>
-              <p className="eyebrow">AVAILABLE JOBS</p>
+              <p className="eyebrow">
+                AVAILABLE JOBS
+              </p>
 
               <h2 className="section-title">
                 {filteredJobs.length > 0
@@ -180,7 +223,13 @@ function JobsPageContent() {
                   location={job.location}
                   type={job.type}
                   experience={job.experience}
-                  date={job.date}
+                  date={new Date(
+                    job.created_at
+                  ).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 />
               ))}
             </div>
@@ -210,7 +259,9 @@ export default function JobsPage() {
       fallback={
         <main className="content-page">
           <div className="container">
-            <p className="eyebrow">OPPORTUNITIES</p>
+            <p className="eyebrow">
+              OPPORTUNITIES
+            </p>
 
             <h1>Find Your Next Opportunity</h1>
 
