@@ -2,6 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "../../../lib/supabase/server";
 
+type BlogArticle = {
+  slug: string;
+  category: string;
+  title_en: string;
+  description_en: string;
+  content_en: string | null;
+};
+
 type BlogDetailPageProps = {
   params: Promise<{
     slug: string;
@@ -15,7 +23,7 @@ export default async function BlogDetailPage({
 
   const supabase = await createClient();
 
-  const { data: article, error } = await supabase
+  const { data, error } = await supabase
     .from("blogs")
     .select(
       "slug, category, title_en, description_en, content_en"
@@ -24,14 +32,16 @@ export default async function BlogDetailPage({
     .eq("is_published", true)
     .single();
 
+  const article = data as BlogArticle | null;
+
   if (error || !article) {
     notFound();
   }
 
-  const contentBlocks = article.content_en
+  const contentBlocks: string[] = article.content_en
     ? article.content_en
         .split(/\n\s*\n/)
-        .map((block) => block.trim())
+        .map((block: string) => block.trim())
         .filter(Boolean)
     : [];
 
@@ -53,10 +63,10 @@ export default async function BlogDetailPage({
         </div>
 
         <div>
-          {contentBlocks.map((block, index) => {
-            const lines = block
+          {contentBlocks.map((block: string, index: number) => {
+            const lines: string[] = block
               .split("\n")
-              .map((line) => line.trim())
+              .map((line: string) => line.trim())
               .filter(Boolean);
 
             const heading = lines[0];
@@ -69,14 +79,19 @@ export default async function BlogDetailPage({
               >
                 <h2>{heading}</h2>
 
-                {paragraphs.map((paragraph, paragraphIndex) => (
-                  <p
-                    key={`${article.slug}-${index}-${paragraphIndex}`}
-                    style={{ marginTop: "10px" }}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
+                {paragraphs.map(
+                  (
+                    paragraph: string,
+                    paragraphIndex: number
+                  ) => (
+                    <p
+                      key={`${article.slug}-${index}-${paragraphIndex}`}
+                      style={{ marginTop: "10px" }}
+                    >
+                      {paragraph}
+                    </p>
+                  )
+                )}
               </section>
             );
           })}
@@ -86,8 +101,8 @@ export default async function BlogDetailPage({
           <h2>Looking for opportunities?</h2>
 
           <p>
-            Explore Jobsera's latest opportunities and take the next step
-            in your career.
+            Explore Jobsera's latest opportunities and take the
+            next step in your career.
           </p>
 
           <Link
