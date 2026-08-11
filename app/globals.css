@@ -1198,3 +1198,59 @@ main {
     font-size: 11px;
   }
 }
+/* HOMEPAGE HIGHLIGHT */
+
+.home-highlight {
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface-blue);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-highlight-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  animation: jobsera-highlight-scroll 20s linear infinite;
+}
+
+.home-highlight-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 36px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.home-highlight-item::after {
+  content: "•";
+  margin-left: 36px;
+  opacity: 0.5;
+}
+
+.home-highlight-item:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes jobsera-highlight-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-highlight-track {
+    animation: none;
+  }
+}
