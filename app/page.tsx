@@ -159,6 +159,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* HIGHLIGHT */}
+      <HomeHighlight
+        text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
+        href="/jobs"
+      />
       {/* QUALIFICATIONS */}
       <section className="section">
         <div className="container">
@@ -189,11 +194,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* HIGHLIGHT */}
-      <HomeHighlight
-        text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
-        href="/jobs"
-      />
       {/* LATEST JOBS */}
       <section className="section section-muted">
         <div className="container">
