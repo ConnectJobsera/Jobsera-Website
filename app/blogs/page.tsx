@@ -1,52 +1,20 @@
 import Link from "next/link";
 import BlogCard from "../../components/BlogCard";
+import { createClient } from "../../lib/supabase/server";
 
-const articles = [
-  {
-    category: "CAREER GUIDE",
-    title: "How to Build a Resume That Gets Noticed",
-    description:
-      "Simple ways to make your resume clearer, more relevant and easier for employers to understand.",
-    slug: "how-to-build-a-resume-that-gets-noticed",
-  },
-  {
-    category: "CAREER GROWTH",
-    title: "Skills That Can Help You Grow",
-    description:
-      "Explore practical skills that can improve your confidence and help you prepare for today's opportunities.",
-    slug: "skills-that-can-help-you-grow",
-  },
-  {
-    category: "JOB SEARCH",
-    title: "How to Find the Right Job",
-    description:
-      "A simple approach to finding opportunities that match your skills, experience and career goals.",
-    slug: "how-to-find-the-right-job",
-  },
-  {
-    category: "INTERVIEW GUIDE",
-    title: "How to Prepare for Your Next Interview",
-    description:
-      "Practical ways to prepare, communicate confidently and make a stronger impression during an interview.",
-    slug: "how-to-prepare-for-your-next-interview",
-  },
-  {
-    category: "CAREER GUIDE",
-    title: "What Employers Look For in Candidates",
-    description:
-      "Understand the qualities, skills and habits that can help you stand out when applying for opportunities.",
-    slug: "what-employers-look-for-in-candidates",
-  },
-  {
-    category: "JOB SEARCH",
-    title: "Common Job Search Mistakes to Avoid",
-    description:
-      "Avoid common mistakes that can make your job search harder and learn how to approach opportunities more effectively.",
-    slug: "common-job-search-mistakes-to-avoid",
-  },
-];
+export default async function BlogsPage() {
+  const supabase = await createClient();
 
-export default function BlogsPage() {
+  const { data: articles, error } = await supabase
+    .from("blogs")
+    .select(
+      "slug, category, title_en, description_en"
+    )
+    .eq("is_published", true)
+    .order("created_at", {
+      ascending: false,
+    });
+
   return (
     <>
       <section className="content-page">
@@ -79,17 +47,43 @@ export default function BlogsPage() {
             </div>
           </div>
 
-          <div className="card-grid">
-            {articles.map((article) => (
-              <BlogCard
-                key={article.slug}
-                category={article.category}
-                title={article.title}
-                description={article.description}
-                slug={article.slug}
-              />
-            ))}
-          </div>
+          {error ? (
+            <div className="card">
+              <div className="card-content">
+                <h3 className="card-title">
+                  Unable to load articles
+                </h3>
+
+                <p className="card-description">
+                  Please try again later.
+                </p>
+              </div>
+            </div>
+          ) : articles && articles.length > 0 ? (
+            <div className="card-grid">
+              {articles.map((article) => (
+                <BlogCard
+                  key={article.slug}
+                  category={article.category}
+                  title={article.title_en}
+                  description={article.description_en}
+                  slug={article.slug}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="card">
+              <div className="card-content">
+                <h3 className="card-title">
+                  No articles available yet.
+                </h3>
+
+                <p className="card-description">
+                  New career resources will appear here soon.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -97,17 +91,22 @@ export default function BlogsPage() {
         <div className="container">
           <div className="notification-card">
             <div>
-              <p className="eyebrow">LOOKING FOR OPPORTUNITIES?</p>
+              <p className="eyebrow">
+                LOOKING FOR OPPORTUNITIES?
+              </p>
 
               <h2>Find your next opportunity.</h2>
 
               <p>
-                Explore Jobsera's latest job opportunities and take the next
-                step in your career.
+                Explore Jobsera's latest job opportunities and take
+                the next step in your career.
               </p>
             </div>
 
-            <Link href="/jobs" className="button button-primary">
+            <Link
+              href="/jobs"
+              className="button button-primary"
+            >
               Explore Jobs
             </Link>
           </div>
