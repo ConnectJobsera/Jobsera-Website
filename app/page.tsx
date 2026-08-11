@@ -1,9 +1,7 @@
 "use client";
-
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import HomeHighlight from "../components/HomeHighlight";
-
 const qualifications = [
   {
     label: "8th Pass",
@@ -26,7 +24,6 @@ const qualifications = [
     href: "/jobs?qualification=graduate",
   },
 ];
-
 const jobs = [
   {
     id: "technova-frontend-developer",
@@ -56,7 +53,6 @@ const jobs = [
     date: "Recently added",
   },
 ];
-
 const articles = [
   {
     slug: "how-to-build-a-resume-that-gets-noticed",
@@ -80,56 +76,42 @@ const articles = [
       "A simple approach to finding opportunities that match your skills, experience and career goals.",
   },
 ];
-
 export default function Home() {
   const [search, setSearch] = useState("");
   const [notificationMessage, setNotificationMessage] =
     useState("");
-
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const query = search.trim();
-
     if (query) {
       window.location.href = `/jobs?search=${encodeURIComponent(query)}`;
     } else {
       window.location.href = "/jobs";
     }
   }
-
   function handleNotifications() {
     setNotificationMessage(
       "Notifications will be available soon."
     );
   }
-
   return (
-  <>
-    <HomeHighlight
-      text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
-      href="/jobs"
-    />
-
-    {/* HERO */}
+    <>
+      {/* HERO */}
       <section className="hero">
         <div className="container">
           <div className="hero-content">
             <p className="hero-eyebrow">
               YOUR CAREER STARTS HERE
             </p>
-
             <h1 className="hero-title">
               Stay informed.
               <br />
               <span>Find your next opportunity.</span>
             </h1>
-
             <p className="hero-description">
               Discover jobs, career information and useful resources
               designed to help you take your next step with confidence.
             </p>
-
             <div className="hero-actions">
               <Link
                 href="/jobs"
@@ -137,7 +119,6 @@ export default function Home() {
               >
                 Explore Jobs
               </Link>
-
               <Link
                 href="/blogs"
                 className="button button-secondary"
@@ -145,7 +126,6 @@ export default function Home() {
                 Career Insights
               </Link>
             </div>
-
             <form
               onSubmit={handleSearch}
               style={{
@@ -169,7 +149,6 @@ export default function Home() {
                   height: "46px",
                 }}
               />
-
               <button
                 type="submit"
                 className="button button-primary"
@@ -180,7 +159,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* QUALIFICATIONS */}
       <section className="section">
         <div className="container">
@@ -189,18 +167,15 @@ export default function Home() {
               <p className="eyebrow">
                 FIND YOUR OPPORTUNITY
               </p>
-
               <h2 className="section-title">
                 Jobs by Qualification
               </h2>
-
               <p className="section-description">
                 Choose your qualification to discover relevant
                 opportunities.
               </p>
             </div>
           </div>
-
           <div className="qualification-grid">
             {qualifications.map((qualification) => (
               <Link
@@ -214,7 +189,11 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      {/* HIGHLIGHT */}
+      <HomeHighlight
+        text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
+        href="/jobs"
+      />
       {/* LATEST JOBS */}
       <section className="section section-muted">
         <div className="container">
@@ -223,16 +202,13 @@ export default function Home() {
               <p className="eyebrow">
                 OPPORTUNITIES
               </p>
-
               <h2 className="section-title">
                 Latest Jobs
               </h2>
-
               <p className="section-description">
                 Discover recently added opportunities.
               </p>
             </div>
-
             <Link
               href="/jobs"
               className="button button-secondary"
@@ -240,7 +216,6 @@ export default function Home() {
               View All Jobs
             </Link>
           </div>
-
           <div className="job-list">
             {jobs.map((job) => (
               <article
@@ -251,23 +226,19 @@ export default function Home() {
                   <span className="job-company">
                     {job.company}
                   </span>
-
                   <h3 className="job-title">
                     {job.title}
                   </h3>
-
                   <div className="job-details">
                     <span>{job.location}</span>
                     <span>{job.type}</span>
                     <span>{job.experience}</span>
                   </div>
                 </div>
-
                 <div className="job-side">
                   <span className="job-date">
                     {job.date}
                   </span>
-
                   <Link
                     href={`/jobs/${job.id}`}
                     className="job-link"
@@ -280,7 +251,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* ARTICLES */}
       <section className="section">
         <div className="container">
@@ -289,17 +259,14 @@ export default function Home() {
               <p className="eyebrow">
                 CAREER INSIGHTS
               </p>
-
               <h2 className="section-title">
                 Learn. Prepare. Grow.
               </h2>
-
               <p className="section-description">
                 Useful information to help you make better
                 career decisions.
               </p>
             </div>
-
             <Link
               href="/blogs"
               className="button button-secondary"
@@ -307,7 +274,6 @@ export default function Home() {
               View All
             </Link>
           </div>
-
           <div className="card-grid">
             {articles.map((article) => (
               <article
@@ -318,15 +284,12 @@ export default function Home() {
                   <p className="eyebrow">
                     {article.category}
                   </p>
-
                   <h3 className="card-title">
                     {article.title}
                   </h3>
-
                   <p className="card-description">
                     {article.description}
                   </p>
-
                   <Link
                     href={`/blogs/${article.slug}`}
                     className="article-link"
@@ -339,7 +302,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* NOTIFICATIONS */}
       <section className="notification-section">
         <div className="container">
@@ -348,16 +310,13 @@ export default function Home() {
               <p className="eyebrow">
                 STAY UPDATED
               </p>
-
               <h2>
                 Don't miss what's next.
               </h2>
-
               <p>
                 Enable Jobsera notifications and get updates
                 about new opportunities and important content.
               </p>
-
               {notificationMessage && (
                 <p
                   style={{
@@ -371,7 +330,6 @@ export default function Home() {
                 </p>
               )}
             </div>
-
             <button
               type="button"
               className="button button-primary"
