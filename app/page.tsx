@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import HomeHighlight from "../components/HomeHighlight";
 
 const qualifications = [
   {
@@ -104,8 +105,13 @@ export default function Home() {
   }
 
   return (
-    <>
-      {/* HERO */}
+  <>
+    <HomeHighlight
+      text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
+      href="/jobs"
+    />
+
+    {/* HERO */}
       <section className="hero">
         <div className="container">
           <div className="hero-content">
