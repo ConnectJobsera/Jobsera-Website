@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "../../lib/supabase/server";
 import LogoutButton from "./LogoutButton";
 
@@ -50,7 +51,7 @@ export default async function AdminPage() {
         </div>
 
         <div className="card-grid">
-          <div className="card">
+          <Link href="/admin/jobs" className="card">
             <div className="card-content">
               <p className="eyebrow">JOBS</p>
               <h2 className="card-title">Manage Jobs</h2>
@@ -58,9 +59,9 @@ export default async function AdminPage() {
                 Add, edit and remove job opportunities.
               </p>
             </div>
-          </div>
+          </Link>
 
-          <div className="card">
+          <Link href="/admin/blogs" className="card">
             <div className="card-content">
               <p className="eyebrow">BLOGS</p>
               <h2 className="card-title">Manage Blogs</h2>
@@ -68,9 +69,9 @@ export default async function AdminPage() {
                 Add, edit and manage career articles.
               </p>
             </div>
-          </div>
+          </Link>
 
-          <div className="card">
+          <Link href="/admin/highlights" className="card">
             <div className="card-content">
               <p className="eyebrow">HIGHLIGHTS</p>
               <h2 className="card-title">Manage Highlights</h2>
@@ -78,7 +79,7 @@ export default async function AdminPage() {
                 Control the homepage highlight messages.
               </p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </main>
