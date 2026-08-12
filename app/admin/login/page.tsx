@@ -26,16 +26,12 @@ function AdminLoginForm() {
       password,
     });
 
-       if (error || !data.user) {
-      // TEMPORARY DIAGNOSTIC — remove after debugging.
-      setErrorMessage(
-        `Supabase error: ${error?.message ?? "no user returned"} (status: ${
-          (error as any)?.status ?? "n/a"
-        })`
-      );
+    if (error || !data.user) {
+      setErrorMessage("Invalid email or password.");
       setIsLoading(false);
       return;
     }
+
 
 
     const { data: adminUser, error: adminError } = await supabase
