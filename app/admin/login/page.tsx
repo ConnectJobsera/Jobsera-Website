@@ -1,10 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -32,7 +32,6 @@ export default function AdminLoginPage() {
       return;
     }
 
-    // Verify that the authenticated user is actually an admin.
     const { data: adminUser, error: adminError } = await supabase
       .from("admin_users")
       .select("user_id")
@@ -109,10 +108,7 @@ export default function AdminLoginPage() {
             }}
           >
             <div className="form-group">
-              <label
-                htmlFor="admin-email"
-                className="form-label"
-              >
+              <label htmlFor="admin-email" className="form-label">
                 Email
               </label>
 
@@ -129,10 +125,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="admin-password"
-                className="form-label"
-              >
+              <label htmlFor="admin-password" className="form-label">
                 Password
               </label>
 
@@ -179,5 +172,21 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="content-page">
+          <div className="container">
+            <p>Loading admin login...</p>
+          </div>
+        </main>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
   );
 }
