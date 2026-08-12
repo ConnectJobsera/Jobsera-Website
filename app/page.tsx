@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import HomeHighlight from "../components/HomeHighlight";
+import { createClient } from "../lib/supabase/client";
 const qualifications = [
   {
     label: "8th Pass",
@@ -24,62 +25,95 @@ const qualifications = [
     href: "/jobs?qualification=graduate",
   },
 ];
-const jobs = [
-  {
-    id: "technova-frontend-developer",
-    company: "TECHNOVA",
-    title: "Frontend Developer",
-    location: "Remote",
-    type: "Full Time",
-    experience: "Entry Level",
-    date: "Recently added",
-  },
-  {
-    id: "digital-solutions-customer-support",
-    company: "DIGITAL SOLUTIONS",
-    title: "Customer Support Executive",
-    location: "Delhi",
-    type: "Full Time",
-    experience: "0–2 years",
-    date: "Recently added",
-  },
-  {
-    id: "startup-hub-marketing-intern",
-    company: "STARTUP HUB",
-    title: "Marketing Intern",
-    location: "Noida",
-    type: "Internship",
-    experience: "Entry Level",
-    date: "Recently added",
-  },
-];
-const articles = [
-  {
-    slug: "how-to-build-a-resume-that-gets-noticed",
-    category: "CAREER GUIDE",
-    title: "How to Build a Resume That Gets Noticed",
-    description:
-      "Simple ways to make your resume clearer, more relevant and easier for employers to understand.",
-  },
-  {
-    slug: "skills-that-can-help-you-grow",
-    category: "CAREER GROWTH",
-    title: "Skills That Can Help You Grow",
-    description:
-      "Explore practical skills that can improve your confidence and help you prepare for today's opportunities.",
-  },
-  {
-    slug: "how-to-find-the-right-job",
-    category: "JOB SEARCH",
-    title: "How to Find the Right Job",
-    description:
-      "A simple approach to finding opportunities that match your skills, experience and career goals.",
-  },
-];
+
+type HomeJob = {
+  id: string;
+  company: string;
+  title: string;
+  location: string;
+  type: string;
+  experience: string;
+  created_at: string;
+};
+
+type HomeArticle = {
+  slug: string;
+  category: string;
+  title_en: string;
+  description_en: string;
+};
+
+type HomeHighlightRow = {
+  text: string;
+  link: string;
+};
+
+const defaultHighlight: HomeHighlightRow = {
+  text: "New opportunities are waiting for you — explore the latest jobs on Jobsera.",
+  link: "/jobs",
+};
+
+function formatJobDate(dateString: string) {
+  const date = new Date(dateString);
+  const daysAgo = Math.floor(
+    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysAgo <= 3) return "Recently added";
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function Home() {
   const [search, setSearch] = useState("");
   const [notificationMessage, setNotificationMessage] =
     useState("");
+
+  const [jobs, setJobs] = useState<HomeJob[]>([]);
+  const [articles, setArticles] = useState<HomeArticle[]>([]);
+  const [highlight, setHighlight] =
+    useState<HomeHighlightRow>(defaultHighlight);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadHomeData() {
+      const [jobsResult, blogsResult, highlightsResult] =
+        await Promise.all([
+          supabase
+            .from("jobs")
+            .select("id, company, title, location, type, experience, created_at")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("blogs")
+            .select("slug, category, title_en, description_en")
+            .eq("is_published", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("highlights")
+            .select("text, link")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(1),
+        ]);
+
+      if (jobsResult.data) setJobs(jobsResult.data);
+      if (blogsResult.data) setArticles(blogsResult.data);
+      if (highlightsResult.data && highlightsResult.data.length > 0) {
+        setHighlight(highlightsResult.data[0]);
+      }
+    }
+
+    loadHomeData();
+  }, []);
+
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = search.trim();
@@ -161,8 +195,8 @@ export default function Home() {
       </section>
       {/* HIGHLIGHT */}
       <HomeHighlight
-        text="New opportunities are waiting for you — explore the latest jobs on Jobsera."
-        href="/jobs"
+        text={highlight.text}
+        href={highlight.link}
       />
       {/* QUALIFICATIONS */}
       <section className="section">
@@ -217,37 +251,43 @@ export default function Home() {
             </Link>
           </div>
           <div className="job-list">
-            {jobs.map((job) => (
-              <article
-                className="job-item"
-                key={job.id}
-              >
-                <div className="job-main">
-                  <span className="job-company">
-                    {job.company}
-                  </span>
-                  <h3 className="job-title">
-                    {job.title}
-                  </h3>
-                  <div className="job-details">
-                    <span>{job.location}</span>
-                    <span>{job.type}</span>
-                    <span>{job.experience}</span>
+            {jobs.length === 0 ? (
+              <p style={{ color: "var(--text-secondary)" }}>
+                No active jobs yet. Check back soon.
+              </p>
+            ) : (
+              jobs.map((job) => (
+                <article
+                  className="job-item"
+                  key={job.id}
+                >
+                  <div className="job-main">
+                    <span className="job-company">
+                      {job.company}
+                    </span>
+                    <h3 className="job-title">
+                      {job.title}
+                    </h3>
+                    <div className="job-details">
+                      <span>{job.location}</span>
+                      <span>{job.type}</span>
+                      <span>{job.experience}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="job-side">
-                  <span className="job-date">
-                    {job.date}
-                  </span>
-                  <Link
-                    href={`/jobs/${job.id}`}
-                    className="job-link"
-                  >
-                    View Job →
-                  </Link>
-                </div>
-              </article>
-            ))}
+                  <div className="job-side">
+                    <span className="job-date">
+                      {formatJobDate(job.created_at)}
+                    </span>
+                    <Link
+                      href={`/jobs/${job.id}`}
+                      className="job-link"
+                    >
+                      View Job →
+                    </Link>
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -275,30 +315,36 @@ export default function Home() {
             </Link>
           </div>
           <div className="card-grid">
-            {articles.map((article) => (
-              <article
-                className="card"
-                key={article.slug}
-              >
-                <div className="card-content">
-                  <p className="eyebrow">
-                    {article.category}
-                  </p>
-                  <h3 className="card-title">
-                    {article.title}
-                  </h3>
-                  <p className="card-description">
-                    {article.description}
-                  </p>
-                  <Link
-                    href={`/blogs/${article.slug}`}
-                    className="article-link"
-                  >
-                    Read article →
-                  </Link>
-                </div>
-              </article>
-            ))}
+            {articles.length === 0 ? (
+              <p style={{ color: "var(--text-secondary)" }}>
+                No published articles yet. Check back soon.
+              </p>
+            ) : (
+              articles.map((article) => (
+                <article
+                  className="card"
+                  key={article.slug}
+                >
+                  <div className="card-content">
+                    <p className="eyebrow">
+                      {article.category}
+                    </p>
+                    <h3 className="card-title">
+                      {article.title_en}
+                    </h3>
+                    <p className="card-description">
+                      {article.description_en}
+                    </p>
+                    <Link
+                      href={`/blogs/${article.slug}`}
+                      className="article-link"
+                    >
+                      Read article →
+                    </Link>
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
