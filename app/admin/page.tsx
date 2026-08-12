@@ -1,0 +1,86 @@
+import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase/server";
+import LogoutButton from "./LogoutButton";
+
+export default async function AdminPage() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/admin/login");
+  }
+
+  const { data: adminUser, error } = await supabase
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !adminUser) {
+    await supabase.auth.signOut();
+    redirect("/admin/login");
+  }
+
+  return (
+    <main className="content-page">
+      <div className="container">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: "24px",
+            marginBottom: "36px",
+          }}
+        >
+          <div>
+            <p className="eyebrow">ADMINISTRATION</p>
+
+            <h1>Admin Dashboard</h1>
+
+            <p className="page-intro">
+              Manage Jobsera content from one secure dashboard.
+            </p>
+          </div>
+
+          <LogoutButton />
+        </div>
+
+        <div className="card-grid">
+          <div className="card">
+            <div className="card-content">
+              <p className="eyebrow">JOBS</p>
+              <h2 className="card-title">Manage Jobs</h2>
+              <p className="card-description">
+                Add, edit and remove job opportunities.
+              </p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-content">
+              <p className="eyebrow">BLOGS</p>
+              <h2 className="card-title">Manage Blogs</h2>
+              <p className="card-description">
+                Add, edit and manage career articles.
+              </p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-content">
+              <p className="eyebrow">HIGHLIGHTS</p>
+              <h2 className="card-title">Manage Highlights</h2>
+              <p className="card-description">
+                Control the homepage highlight messages.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
