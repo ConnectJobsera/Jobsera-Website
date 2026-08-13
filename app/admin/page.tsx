@@ -25,6 +25,15 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
+  // Temporary diagnostic: check whether the authenticated
+  // Supabase session is recognized as an admin.
+  const { data: isAdminResult, error: isAdminError } =
+    await supabase.rpc("is_admin");
+
+  const adminDiagnostic = isAdminError
+    ? `ERROR: ${isAdminError.message}`
+    : String(isAdminResult);
+
   return (
     <main className="content-page">
       <div className="container">
@@ -44,6 +53,11 @@ export default async function AdminPage() {
 
             <p className="page-intro">
               Manage Jobsera content from one secure dashboard.
+            </p>
+
+            <p style={{ marginTop: "16px", fontSize: "14px" }}>
+              Temporary is_admin() diagnostic:{" "}
+              <strong>{adminDiagnostic}</strong>
             </p>
           </div>
 
