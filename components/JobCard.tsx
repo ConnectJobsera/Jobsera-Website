@@ -2,41 +2,90 @@ import Link from "next/link";
 
 type JobCardProps = {
   id: string;
-  company: string;
+  organization: string;
   title: string;
+  post_name: string;
+  state: string;
   location: string;
-  type: string;
-  experience: string;
+  qualification: string;
+  total_vacancy?: number | null;
+  last_date?: string | null;
   date?: string;
 };
 
 export default function JobCard({
   id,
-  company,
+  organization,
   title,
+  post_name,
+  state,
   location,
-  type,
-  experience,
+  qualification,
+  total_vacancy,
+  last_date,
   date,
 }: JobCardProps) {
   return (
     <article className="job-item">
       <div className="job-main">
-        <span className="job-company">{company}</span>
+        <span className="job-company">
+          {organization}
+        </span>
 
         <h3 className="job-title">{title}</h3>
 
+        {post_name && (
+          <p
+            style={{
+              margin: "4px 0 8px",
+              fontSize: "14px",
+              fontWeight: 600,
+            }}
+          >
+            {post_name}
+          </p>
+        )}
+
         <div className="job-details">
-          <span>{location}</span>
-          <span>{type}</span>
-          <span>{experience}</span>
+          {state && <span>{state}</span>}
+          {location && <span>{location}</span>}
+          {qualification && <span>{qualification}</span>}
+          {total_vacancy !== null &&
+            total_vacancy !== undefined && (
+              <span>
+                {total_vacancy}{" "}
+                {total_vacancy === 1
+                  ? "Vacancy"
+                  : "Vacancies"}
+              </span>
+            )}
         </div>
       </div>
 
       <div className="job-side">
-        {date && <span className="job-date">{date}</span>}
+        {last_date && (
+          <span className="job-date">
+            Last Date:{" "}
+            {new Date(
+              `${last_date}T00:00:00`
+            ).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </span>
+        )}
 
-        <Link href={`/jobs/${id}`} className="job-link">
+        {!last_date && date && (
+          <span className="job-date">
+            {date}
+          </span>
+        )}
+
+        <Link
+          href={`/jobs/${id}`}
+          className="job-link"
+        >
           View Job →
         </Link>
       </div>
