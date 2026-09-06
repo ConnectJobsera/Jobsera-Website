@@ -3,71 +3,54 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import HomeHighlight from "../components/HomeHighlight";
-import JobCard from "../components/JobCard";
 import { createClient } from "../lib/supabase/client";
 
-type Qualification = {
-  label: string;
-  value: string;
-  href: string;
-  icon:
-    | "10th"
-    | "12th"
-    | "graduate"
-    | "postgraduate"
-    | "diploma"
-    | "iti";
-};
-
-const qualifications: Qualification[] = [
+const qualifications = [
   {
     label: "10th Pass",
-    value: "10th Pass",
+    shortLabel: "10th",
     href: "/jobs?qualification=10th-pass",
-    icon: "10th",
+    icon: "10",
   },
   {
     label: "12th Pass",
-    value: "12th Pass",
+    shortLabel: "12th",
     href: "/jobs?qualification=12th-pass",
-    icon: "12th",
+    icon: "12",
   },
   {
     label: "Graduate",
-    value: "Graduate",
+    shortLabel: "Graduate",
     href: "/jobs?qualification=graduate",
-    icon: "graduate",
+    icon: "GR",
   },
   {
     label: "Post Graduate",
-    value: "Post Graduate",
+    shortLabel: "Post Graduate",
     href: "/jobs?qualification=post-graduate",
-    icon: "postgraduate",
+    icon: "PG",
   },
   {
     label: "Diploma",
-    value: "Diploma",
+    shortLabel: "Diploma",
     href: "/jobs?qualification=diploma",
-    icon: "diploma",
+    icon: "DP",
   },
   {
     label: "ITI",
-    value: "ITI",
+    shortLabel: "ITI",
     href: "/jobs?qualification=iti",
-    icon: "iti",
+    icon: "IT",
   },
 ];
 
 type HomeJob = {
   id: string;
-  title: string | null;
-  organization: string | null;
-  post_name: string | null;
-  state: string | null;
-  location: string | null;
-  qualification: string | null;
-  total_vacancy: number | null;
-  last_date: string | null;
+  company: string;
+  title: string;
+  location: string;
+  type: string;
+  experience: string;
   created_at: string;
 };
 
@@ -84,20 +67,12 @@ type HomeHighlightRow = {
 };
 
 const defaultHighlight: HomeHighlightRow = {
-  text: "New opportunities added daily — Explore the latest jobs and take the next step in your career.",
+  text: "New opportunities added daily – Explore the latest jobs and take the next step in your career.",
   link: "/jobs",
 };
 
-function normalizeQualification(value: string) {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
 function formatJobDate(dateString: string) {
   const date = new Date(dateString);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Recently added";
-  }
 
   const daysAgo = Math.floor(
     (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
@@ -114,360 +89,83 @@ function formatJobDate(dateString: string) {
   });
 }
 
-function QualificationIcon({
-  type,
-}: {
-  type: Qualification["icon"];
-}) {
-  const common = {
-    width: 48,
-    height: 48,
-    viewBox: "0 0 48 48",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    "aria-hidden": true,
-  } as const;
-
-  if (type === "diploma") {
-    return (
-      <svg {...common}>
-        <rect
-          x="13"
-          y="7"
-          width="22"
-          height="34"
-          rx="3"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <path
-          d="M19 15h10M19 21h10M19 27h7"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
-
-  if (type === "iti") {
-    return (
-      <svg {...common}>
-        <circle
-          cx="24"
-          cy="20"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <path
-          d="m18 30-3 11 9-5 9 5-3-11"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-        <path
-          d="m24 14 2 4 4 .5-3 3 1 4-4-2-4 2 1-4-3-3 4-.5 2-4Z"
-          fill="currentColor"
-        />
-      </svg>
-    );
-  }
-
-  if (type === "postgraduate") {
-    return (
-      <svg {...common}>
-        <path
-          d="M7 17 24 9l17 8-17 8L7 17Z"
-          fill="currentColor"
-        />
-        <path
-          d="M13 21v9c5 4 17 4 22 0v-9"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path
-          d="M41 18v10"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
-
-  if (type === "12th") {
-    return (
-      <svg {...common}>
-        <rect
-          x="8"
-          y="11"
-          width="32"
-          height="23"
-          rx="3"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <path
-          d="M14 18h20M14 24h10"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <circle
-          cx="34"
-          cy="35"
-          r="7"
-          fill="currentColor"
-        />
-        <path
-          d="m31 35 2 2 4-5"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <svg {...common}>
-      <path
-        d="M5 16 24 7l19 9-19 9L5 16Z"
-        fill="currentColor"
-      />
-      <path
-        d="M12 21v10c6 5 18 5 24 0V21"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M43 18v12"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M21 31h6v7h-6z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      width="21"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle
-        cx="11"
-        cy="11"
-        r="6.5"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="m16 16 4.5 4.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function LocationIcon() {
-  return (
-    <svg
-      width="21"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M20 10.5c0 5.5-8 11-8 11s-8-5.5-8-11a8 8 0 1 1 16 0Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <circle
-        cx="12"
-        cy="10"
-        r="2.5"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M5 12h13M13 6l6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export default function Home() {
-  const [notificationMessage, setNotificationMessage] =
-    useState("");
+  const [search, setSearch] = useState("");
+  const [location, setLocation] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const [jobs, setJobs] = useState<HomeJob[]>([]);
   const [articles, setArticles] = useState<HomeArticle[]>([]);
   const [highlight, setHighlight] =
     useState<HomeHighlightRow>(defaultHighlight);
 
-  const [qualificationCounts, setQualificationCounts] =
-    useState<Record<string, number>>({});
-
-  const [heroSearch, setHeroSearch] = useState("");
-  const [heroLocation, setHeroLocation] = useState("");
-
   useEffect(() => {
     const supabase = createClient();
 
     async function loadHomeData() {
-      const [
-        jobsResult,
-        blogsResult,
-        highlightsResult,
-        qualificationResult,
-      ] = await Promise.all([
-        supabase
-          .from("jobs")
-          .select(
-            "id, title, organization, post_name, state, location, qualification, total_vacancy, last_date, created_at"
-          )
-          .eq("is_active", true)
-          .order("created_at", {
-            ascending: false,
-          })
-          .limit(3),
+      const [jobsResult, blogsResult, highlightsResult] =
+        await Promise.all([
+          supabase
+            .from("jobs")
+            .select(
+              "id, company, title, location, type, experience, created_at"
+            )
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
 
-        supabase
-          .from("blogs")
-          .select(
-            "slug, category, title_en, description_en"
-          )
-          .eq("is_published", true)
-          .order("created_at", {
-            ascending: false,
-          })
-          .limit(3),
+          supabase
+            .from("blogs")
+            .select("slug, category, title_en, description_en")
+            .eq("is_published", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
 
-        supabase
-          .from("highlights")
-          .select("text, link")
-          .eq("is_active", true)
-          .order("created_at", {
-            ascending: false,
-          })
-          .limit(1),
-
-        supabase
-          .from("jobs")
-          .select("qualification")
-          .eq("is_active", true),
-      ]);
+          supabase
+            .from("highlights")
+            .select("text, link")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(1),
+        ]);
 
       if (jobsResult.data) {
-        setJobs(jobsResult.data as HomeJob[]);
+        setJobs(jobsResult.data);
       }
 
       if (blogsResult.data) {
-        setArticles(
-          blogsResult.data as HomeArticle[]
-        );
+        setArticles(blogsResult.data);
       }
 
-      if (
-        highlightsResult.data &&
-        highlightsResult.data.length > 0
-      ) {
-        setHighlight(
-          highlightsResult.data[0] as HomeHighlightRow
-        );
-      }
-
-      if (qualificationResult.data) {
-        const counts: Record<string, number> = {};
-
-        qualificationResult.data.forEach((row) => {
-          if (
-            typeof row.qualification !== "string"
-          ) {
-            return;
-          }
-
-          const value = normalizeQualification(
-            row.qualification
-          );
-
-          if (!value) {
-            return;
-          }
-
-          counts[value] =
-            (counts[value] || 0) + 1;
-        });
-
-        setQualificationCounts(counts);
+      if (highlightsResult.data && highlightsResult.data.length > 0) {
+        setHighlight(highlightsResult.data[0]);
       }
     }
 
     loadHomeData();
   }, []);
 
-  function getQualificationCount(value: string) {
-    return (
-      qualificationCounts[
-        normalizeQualification(value)
-      ] || 0
-    );
-  }
-
-  function handleHeroSearch(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const keyword = heroSearch.trim();
-    const location = heroLocation.trim();
+    const query = search.trim();
+    const locationQuery = location.trim();
 
-    const combinedQuery = [keyword, location]
-      .filter(Boolean)
-      .join(" ");
+    const params = new URLSearchParams();
 
-    if (!combinedQuery) {
-      window.location.href = "/jobs";
-      return;
+    if (query) {
+      params.set("search", query);
     }
 
-    window.location.href =
-      `/jobs?search=${encodeURIComponent(
-        combinedQuery
-      )}`;
+    if (locationQuery) {
+      params.set("location", locationQuery);
+    }
+
+    const queryString = params.toString();
+
+    window.location.href = queryString
+      ? `/jobs?${queryString}`
+      : "/jobs";
   }
 
   function handleNotifications() {
@@ -478,66 +176,101 @@ export default function Home() {
 
   return (
     <>
+      {/* =========================================================
+          HERO
+      ========================================================= */}
       <section className="hero">
-        <div className="hero-orb hero-orb-pink" />
-        <div className="hero-orb hero-orb-blue" />
-        <div className="hero-orb hero-orb-yellow" />
+        <div className="hero-doodle hero-doodle-circle" aria-hidden="true" />
+        <div className="hero-doodle hero-doodle-spark" aria-hidden="true">
+          ✦
+        </div>
+        <div className="hero-doodle hero-doodle-star" aria-hidden="true">
+          ★
+        </div>
+        <div className="hero-doodle hero-doodle-arrow" aria-hidden="true">
+          ↗
+        </div>
 
-        <div className="container hero-container">
+        <div className="container">
           <div className="hero-content">
-            <p className="hero-eyebrow">
-              YOUR NEXT OPPORTUNITY STARTS HERE
-            </p>
+            <p className="hero-eyebrow">YOUR CAREER STARTS HERE</p>
 
             <h1 className="hero-title">
               Find Opportunities.
               <br />
-              Build{" "}
-              <span>Your Future.</span>
+              Build <span>Your Future.</span>
             </h1>
 
             <p className="hero-description">
-              Discover the right job opportunities and
-              take the next step in your career with
-              Jobsera.
+              Discover the right job opportunities and take the next
+              step in your career with confidence.
             </p>
 
             <form
               className="hero-search"
-              onSubmit={handleHeroSearch}
+              onSubmit={handleSearch}
               role="search"
             >
               <div className="hero-search-field">
-                <span className="hero-search-icon">
-                  <SearchIcon />
-                </span>
+                <svg
+                  className="hero-search-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="6.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="m16 16 5 5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                </svg>
 
                 <input
                   type="search"
-                  value={heroSearch}
-                  onChange={(event) =>
-                    setHeroSearch(event.target.value)
-                  }
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
                   placeholder="Job title, keywords or company"
                   aria-label="Job title, keywords or company"
                 />
               </div>
 
-              <div className="hero-search-divider" />
+              <div className="hero-search-divider" aria-hidden="true" />
 
-              <div className="hero-search-field hero-search-location">
-                <span className="hero-search-icon">
-                  <LocationIcon />
-                </span>
+              <div className="hero-search-field">
+                <svg
+                  className="hero-location-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M20 10.5C20 15.5 12 21 12 21S4 15.5 4 10.5a8 8 0 1 1 16 0Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <circle
+                    cx="12"
+                    cy="10.5"
+                    r="2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
 
                 <input
-                  type="search"
-                  value={heroLocation}
-                  onChange={(event) =>
-                    setHeroLocation(event.target.value)
-                  }
+                  type="text"
+                  value={location}
+                  onChange={(event) => setLocation(event.target.value)}
                   placeholder="Location"
-                  aria-label="Location"
+                  aria-label="Job location"
                 />
               </div>
 
@@ -545,96 +278,44 @@ export default function Home() {
                 type="submit"
                 className="hero-search-button"
               >
-                <span>Search Jobs</span>
-                <ArrowIcon />
+                Search Jobs
               </button>
             </form>
-          </div>
 
-          <div
-            className="hero-doodles"
-            aria-hidden="true"
-          >
-            <div className="doodle-circle doodle-circle-one" />
-            <div className="doodle-circle doodle-circle-two" />
+            <div className="hero-quick-links">
+              <span>Popular:</span>
 
-            <svg
-              className="doodle-plane"
-              viewBox="0 0 120 100"
-              fill="none"
-            >
-              <path
-                d="M8 47 105 10 76 82 54 56 8 47Z"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M54 56 105 10 61 63"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <Link href="/jobs?qualification=10th-pass">
+                10th Pass
+              </Link>
 
-            <svg
-              className="doodle-flight"
-              viewBox="0 0 330 150"
-              fill="none"
-            >
-              <path
-                d="M12 115C67 40 115 137 170 71S264 22 316 57"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeDasharray="8 9"
-                strokeLinecap="round"
-              />
-            </svg>
+              <Link href="/jobs?qualification=12th-pass">
+                12th Pass
+              </Link>
 
-            <div className="doodle-spark doodle-spark-one">
-              /
-            </div>
+              <Link href="/jobs?qualification=graduate">
+                Graduate
+              </Link>
 
-            <div className="doodle-spark doodle-spark-two">
-              ✦
-            </div>
-
-            <div className="doodle-spark doodle-spark-three">
-              /
-            </div>
-
-            <div className="doodle-note">
-              <span>Better</span>
-              <span>Jobs</span>
-              <span>Brighter</span>
-              <span>Future</span>
-
-              <svg viewBox="0 0 120 70" fill="none">
-                <path
-                  d="M5 10C37 3 82 20 103 51"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="m91 48 13 3-5 12"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Link href="/jobs?qualification=diploma">
+                Diploma
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
+      {/* =========================================================
+          HIGHLIGHT
+      ========================================================= */}
       <HomeHighlight
         text={highlight.text}
         href={highlight.link}
       />
 
+      {/* =========================================================
+          JOBS BY QUALIFICATION
+      ========================================================= */}
       <section className="section qualification-section">
         <div className="container">
           <div className="qualification-heading">
@@ -647,80 +328,40 @@ export default function Home() {
             </h2>
 
             <p className="section-description">
-              Browse jobs based on your qualification and
-              find opportunities that match your skills.
+              Find opportunities that match your education and
+              experience.
             </p>
           </div>
 
-          <div className="qualification-doodle" aria-hidden="true">
-            <span>Your</span>
-            <span>Qualification</span>
-            <span>Your Chance</span>
-            <svg viewBox="0 0 120 60" fill="none">
-              <path
-                d="M5 25c34 16 71 10 104-12"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="m96 7 13 6-9 9"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <div className="qualification-grid">
+            {qualifications.map((qualification) => (
+              <Link
+                key={qualification.href}
+                href={qualification.href}
+                className="qualification-card"
+              >
+                <span className="qualification-icon">
+                  {qualification.icon}
+                </span>
 
-          <div className="qualification-grid qualification-grid-home">
-            {qualifications.map((qualification) => {
-              const count =
-                getQualificationCount(
-                  qualification.value
-                );
-
-              return (
-                <Link
-                  key={qualification.href}
-                  href={qualification.href}
-                  className={`qualification-card qualification-card-${qualification.icon}`}
-                >
-                  <div className="qualification-icon-wrap">
-                    <QualificationIcon
-                      type={qualification.icon}
-                    />
-                  </div>
-
-                  <strong>
-                    {qualification.label}
-                  </strong>
-
-                  <span>
-                    {count}{" "}
-                    {count === 1 ? "Job" : "Jobs"}
-                  </span>
-
-                  <span
-                    className="qualification-arrow"
-                    aria-hidden="true"
-                  >
-                    <ArrowIcon />
-                  </span>
-                </Link>
-              );
-            })}
+                <span className="qualification-card-content">
+                  <strong>{qualification.label}</strong>
+                  <small>Explore Jobs →</small>
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* =========================================================
+          LATEST JOBS
+      ========================================================= */}
       <section className="section section-muted">
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">
-                OPPORTUNITIES
-              </p>
+              <p className="eyebrow">OPPORTUNITIES</p>
 
               <h2 className="section-title">
                 Latest Jobs
@@ -736,9 +377,6 @@ export default function Home() {
               className="button button-secondary"
             >
               View All Jobs
-              <span className="button-arrow">
-                →
-              </span>
             </Link>
           </div>
 
@@ -749,44 +387,48 @@ export default function Home() {
               </p>
             ) : (
               jobs.map((job) => (
-                <JobCard
+                <article
+                  className="job-item"
                   key={job.id}
-                  id={job.id}
-                  organization={
-                    job.organization ||
-                    "Organization not specified"
-                  }
-                  title={
-                    job.title ||
-                    job.post_name ||
-                    "Job opportunity"
-                  }
-                  post_name={
-                    job.post_name || ""
-                  }
-                  state={job.state || ""}
-                  location={
-                    job.location || ""
-                  }
-                  qualification={
-                    job.qualification || ""
-                  }
-                  total_vacancy={
-                    job.total_vacancy
-                  }
-                  last_date={
-                    job.last_date
-                  }
-                  date={formatJobDate(
-                    job.created_at
-                  )}
-                />
+                >
+                  <div className="job-main">
+                    <span className="job-company">
+                      {job.company}
+                    </span>
+
+                    <h3 className="job-title">
+                      {job.title}
+                    </h3>
+
+                    <div className="job-details">
+                      <span>{job.location}</span>
+                      <span>{job.type}</span>
+                      <span>{job.experience}</span>
+                    </div>
+                  </div>
+
+                  <div className="job-side">
+                    <span className="job-date">
+                      {formatJobDate(job.created_at)}
+                    </span>
+
+                    <Link
+                      href={`/jobs/${job.id}`}
+                      className="job-link"
+                    >
+                      View Job →
+                    </Link>
+                  </div>
+                </article>
               ))
             )}
           </div>
         </div>
       </section>
 
+      {/* =========================================================
+          CAREER INSIGHTS
+      ========================================================= */}
       <section className="section">
         <div className="container">
           <div className="section-heading">
@@ -800,8 +442,8 @@ export default function Home() {
               </h2>
 
               <p className="section-description">
-                Practical career guidance to help you
-                make better career decisions.
+                Useful information to help you make better
+                career decisions.
               </p>
             </div>
 
@@ -809,18 +451,14 @@ export default function Home() {
               href="/blogs"
               className="button button-secondary"
             >
-              View All Articles
-              <span className="button-arrow">
-                →
-              </span>
+              View All
             </Link>
           </div>
 
           <div className="card-grid">
             {articles.length === 0 ? (
               <p className="text-muted">
-                No published articles yet. Check back
-                soon.
+                No published articles yet. Check back soon.
               </p>
             ) : (
               articles.map((article) => (
@@ -829,7 +467,7 @@ export default function Home() {
                   key={article.slug}
                 >
                   <div className="card-content">
-                    <p className="card-category">
+                    <p className="eyebrow">
                       {article.category}
                     </p>
 
@@ -845,7 +483,7 @@ export default function Home() {
                       href={`/blogs/${article.slug}`}
                       className="article-link"
                     >
-                      Read Article →
+                      Read article →
                     </Link>
                   </div>
                 </article>
@@ -855,27 +493,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* =========================================================
+          NOTIFICATIONS
+      ========================================================= */}
       <section className="notification-section">
         <div className="container">
           <div className="notification-card">
             <div>
               <p className="eyebrow">
-                NEVER MISS AN OPPORTUNITY
+                STAY UPDATED
               </p>
 
               <h2>
-                Stay updated with new job
-                opportunities.
+                Don&apos;t miss what&apos;s next.
               </h2>
 
               <p>
-                Get notified when new opportunities are
-                added to Jobsera.
+                Enable Jobsera notifications and get updates
+                about new opportunities and important content.
               </p>
 
               {notificationMessage && (
                 <p
-                  className="notification-status"
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "14px",
+                    color: "var(--text-secondary)",
+                  }}
                   role="status"
                 >
                   {notificationMessage}
@@ -888,7 +532,7 @@ export default function Home() {
               className="button button-primary"
               onClick={handleNotifications}
             >
-              Get Job Notifications
+              Enable Notifications
             </button>
           </div>
         </div>
