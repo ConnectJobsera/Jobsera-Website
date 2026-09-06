@@ -1882,3 +1882,22 @@ main {
     animation: none;
   }
 }
+
+
+/* ================================
+   JOBS PAGE SPACING
+================================ */
+
+.jobs-page-header {
+  padding-top: 48px;
+  padding-bottom: 24px;
+}
+
+.jobs-page-header .page-title {
+  margin-bottom: 10px;
+}
+
+.jobs-section {
+  padding-top: 0;
+  }
+}
