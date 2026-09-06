@@ -52,6 +52,9 @@ const qualificationOptions = [
   { label: "Post Graduate", value: "post-graduate" },
 ];
 
+const JOBS_PER_PAGE = 10;
+const PAGINATION_NUMBER_COUNT = 5;
+
 function normalizeQualification(value: string) {
   return value
     .trim()
@@ -190,10 +193,15 @@ function JobsContent() {
     searchParams.get("qualification") || "";
 
   const [jobs, setJobs] = useState<Job[]>([]);
+
   const [search, setSearch] =
     useState(initialSearch);
+
   const [qualification, setQualification] =
     useState(initialQualification);
+
+  const [currentPage, setCurrentPage] =
+    useState(1);
 
   const [loading, setLoading] =
     useState(true);
@@ -209,6 +217,8 @@ function JobsContent() {
     setQualification(
       searchParams.get("qualification") || ""
     );
+
+    setCurrentPage(1);
   }, [searchParams]);
 
   useEffect(() => {
@@ -294,9 +304,80 @@ function JobsContent() {
     qualification,
   ]);
 
+  const totalPages = Math.ceil(
+    filteredJobs.length / JOBS_PER_PAGE
+  );
+
+  useEffect(() => {
+    if (
+      totalPages > 0 &&
+      currentPage > totalPages
+    ) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedJobs = useMemo(() => {
+    const startIndex =
+      (currentPage - 1) *
+      JOBS_PER_PAGE;
+
+    return filteredJobs.slice(
+      startIndex,
+      startIndex + JOBS_PER_PAGE
+    );
+  }, [filteredJobs, currentPage]);
+
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 0) {
+      return [];
+    }
+
+    const visibleCount = Math.min(
+      PAGINATION_NUMBER_COUNT,
+      totalPages
+    );
+
+    let startPage = Math.max(
+      1,
+      currentPage - 2
+    );
+
+    const maxStart =
+      totalPages - visibleCount + 1;
+
+    startPage = Math.min(
+      startPage,
+      maxStart
+    );
+
+    return Array.from(
+      { length: visibleCount },
+      (_, index) => startPage + index
+    );
+  }, [currentPage, totalPages]);
+
   function clearFilters() {
     setSearch("");
     setQualification("");
+    setCurrentPage(1);
+  }
+
+  function goToPage(page: number) {
+    if (
+      page < 1 ||
+      page > totalPages ||
+      page === currentPage
+    ) {
+      return;
+    }
+
+    setCurrentPage(page);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   return (
@@ -331,11 +412,12 @@ function JobsContent() {
                 id="job-search"
                 type="search"
                 value={search}
-                onChange={(event) =>
+                onChange={(event) => {
                   setSearch(
                     event.target.value
-                  )
-                }
+                  );
+                  setCurrentPage(1);
+                }}
                 placeholder="Search by job, organization, location..."
               />
             </div>
@@ -348,11 +430,12 @@ function JobsContent() {
               <select
                 id="qualification"
                 value={qualification}
-                onChange={(event) =>
+                onChange={(event) => {
                   setQualification(
                     event.target.value
-                  )
-                }
+                  );
+                  setCurrentPage(1);
+                }}
               >
                 {qualificationOptions.map(
                   (option) => (
@@ -445,45 +528,115 @@ function JobsContent() {
           {!loading &&
             !error &&
             filteredJobs.length > 0 && (
-              <div className="job-list">
-                {filteredJobs.map((job) => (
-                  <JobCard
-                    key={job.id}
-                    id={job.id}
-                    organization={
-                      job.organization ||
-                      job.company ||
-                      "Organization not specified"
-                    }
-                    title={
-                      job.title ||
-                      job.post_name ||
-                      "Job opportunity"
-                    }
-                    post_name={
-                      job.post_name || ""
-                    }
-                    state={
-                      job.state || ""
-                    }
-                    location={
-                      job.location || ""
-                    }
-                    qualification={
-                      job.qualification || ""
-                    }
-                    total_vacancy={
-                      job.total_vacancy
-                    }
-                    last_date={
-                      job.last_date
-                    }
-                    date={formatDate(
-                      job.created_at
-                    )}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="job-list">
+                  {paginatedJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      id={job.id}
+                      organization={
+                        job.organization ||
+                        job.company ||
+                        "Organization not specified"
+                      }
+                      title={
+                        job.title ||
+                        job.post_name ||
+                        "Job opportunity"
+                      }
+                      post_name={
+                        job.post_name || ""
+                      }
+                      state={
+                        job.state || ""
+                      }
+                      location={
+                        job.location || ""
+                      }
+                      qualification={
+                        job.qualification || ""
+                      }
+                      total_vacancy={
+                        job.total_vacancy
+                      }
+                      last_date={
+                        job.last_date
+                      }
+                      date={formatDate(
+                        job.created_at
+                      )}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <nav
+                    className="jobs-pagination"
+                    aria-label="Jobs pagination"
+                  >
+                    <button
+                      type="button"
+                      className="pagination-button pagination-previous"
+                      onClick={() =>
+                        goToPage(
+                          currentPage - 1
+                        )
+                      }
+                      disabled={
+                        currentPage === 1
+                      }
+                      aria-label="Previous page"
+                    >
+                      ← Previous
+                    </button>
+
+                    <div className="pagination-numbers">
+                      {pageNumbers.map(
+                        (page) => (
+                          <button
+                            key={page}
+                            type="button"
+                            className={`pagination-number ${
+                              page ===
+                              currentPage
+                                ? "active"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              goToPage(page)
+                            }
+                            aria-current={
+                              page ===
+                              currentPage
+                                ? "page"
+                                : undefined
+                            }
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pagination-button pagination-next"
+                      onClick={() =>
+                        goToPage(
+                          currentPage + 1
+                        )
+                      }
+                      disabled={
+                        currentPage ===
+                        totalPages
+                      }
+                      aria-label="Next page"
+                    >
+                      Next →
+                    </button>
+                  </nav>
+                )}
+              </>
             )}
         </div>
       </section>
