@@ -2098,3 +2098,77 @@ main {
     font-size: 22px;
   }
 }
+/* ================================
+   HOMEPAGE HERO — FINAL POLISH
+   ================================ */
+
+.hero {
+  min-height: 550px;
+  padding: 84px 0 86px;
+
+  background:
+    radial-gradient(
+      circle at 8% 18%,
+      rgba(125, 211, 252, 0.24),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 92% 16%,
+      rgba(196, 181, 253, 0.27),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 74% 100%,
+      rgba(251, 207, 232, 0.22),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #f7fbff 0%,
+      #f2f7ff 48%,
+      #fbf8ff 100%
+    );
+}
+
+.hero-search {
+  width: min(920px, 100%);
+  min-height: 80px;
+  margin-top: 36px;
+  border-color: rgba(23, 105, 224, 0.12);
+  border-radius: 20px;
+
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.10),
+    0 4px 14px rgba(15, 23, 42, 0.045);
+}
+
+.hero-search-button {
+  box-shadow:
+    0 9px 22px rgba(23, 105, 224, 0.20);
+}
+
+.hero-doodle-circle {
+  border-color: rgba(23, 105, 224, 0.21);
+}
+
+.hero-doodle-star {
+  opacity: 0.58;
+}
+
+.hero-doodle-arrow {
+  opacity: 0.48;
+}
+
+
+/* Keep the existing mobile design intact */
+@media (max-width: 640px) {
+  .hero {
+    min-height: auto;
+    padding: 62px 0 54px;
+  }
+
+  .hero-search {
+    margin-top: 27px;
+    border-radius: 15px;
+  }
+}
