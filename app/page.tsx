@@ -10,39 +10,221 @@ const qualifications = [
     label: "10th Pass",
     shortLabel: "10th",
     href: "/jobs?qualification=10th-pass",
-    icon: "10",
+    icon: "books",
   },
   {
     label: "12th Pass",
     shortLabel: "12th",
     href: "/jobs?qualification=12th-pass",
-    icon: "12",
+    icon: "trophy",
   },
   {
     label: "Graduate",
     shortLabel: "Graduate",
     href: "/jobs?qualification=graduate",
-    icon: "GR",
+    icon: "cap",
   },
   {
     label: "Post Graduate",
     shortLabel: "Post Graduate",
     href: "/jobs?qualification=post-graduate",
-    icon: "PG",
+    icon: "bag",
   },
   {
     label: "Diploma",
     shortLabel: "Diploma",
     href: "/jobs?qualification=diploma",
-    icon: "DP",
+    icon: "diploma",
   },
   {
     label: "ITI",
     shortLabel: "ITI",
     href: "/jobs?qualification=iti",
-    icon: "IT",
+    icon: "person",
   },
 ];
+
+function QualificationIcon({
+  type,
+}: {
+  type: string;
+}) {
+  if (type === "books") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          d="M10 10h21c3.3 0 6 2.7 6 6v22H16c-3.3 0-6-2.7-6-6V10Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M16 10v28"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        />
+        <path
+          d="M10 32h27"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        />
+        <path
+          d="M22 16h9M22 22h9"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "trophy") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          d="M17 9h14v10c0 6-2.8 10-7 10s-7-4-7-10V9Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M17 13H9v3c0 5 3.5 8 8 8M31 13h8v3c0 5-3.5 8-8 8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M24 29v6M18 39h12M20 35h8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "cap") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          d="m7 18 17-8 17 8-17 8-17-8Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M13 21v9c6 5 16 5 22 0v-9"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M41 19v10"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "bag") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <rect
+          x="9"
+          y="14"
+          width="30"
+          height="25"
+          rx="4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        />
+        <path
+          d="M18 14v-3c0-2 1.5-3 3.5-3h5c2 0 3.5 1 3.5 3v3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M9 23h30M24 23v6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "diploma") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          d="M10 8h24v25H10z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 15h14M15 21h14M15 27h9"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="34"
+          cy="32"
+          r="7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        />
+        <path
+          d="m30 38-2 7 6-3 6 3-2-7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle
+        cx="24"
+        cy="14"
+        r="6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+      />
+      <path
+        d="M12 40c0-8 5-13 12-13s12 5 12 13"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 type HomeJob = {
   id: string;
@@ -180,20 +362,37 @@ export default function Home() {
           HERO
       ========================================================= */}
       <section className="hero">
-        <div className="hero-doodle hero-doodle-circle" aria-hidden="true" />
-        <div className="hero-doodle hero-doodle-spark" aria-hidden="true">
+        <div
+          className="hero-doodle hero-doodle-circle"
+          aria-hidden="true"
+        />
+
+        <div
+          className="hero-doodle hero-doodle-spark"
+          aria-hidden="true"
+        >
           ✦
         </div>
-        <div className="hero-doodle hero-doodle-star" aria-hidden="true">
+
+        <div
+          className="hero-doodle hero-doodle-star"
+          aria-hidden="true"
+        >
           ★
         </div>
-        <div className="hero-doodle hero-doodle-arrow" aria-hidden="true">
+
+        <div
+          className="hero-doodle hero-doodle-arrow"
+          aria-hidden="true"
+        >
           ↗
         </div>
 
         <div className="container">
           <div className="hero-content">
-            <p className="hero-eyebrow">YOUR CAREER STARTS HERE</p>
+            <p className="hero-eyebrow">
+              YOUR CAREER STARTS HERE
+            </p>
 
             <h1 className="hero-title">
               Find Opportunities.
@@ -225,6 +424,7 @@ export default function Home() {
                     stroke="currentColor"
                     strokeWidth="1.8"
                   />
+
                   <path
                     d="m16 16 5 5"
                     stroke="currentColor"
@@ -242,7 +442,10 @@ export default function Home() {
                 />
               </div>
 
-              <div className="hero-search-divider" aria-hidden="true" />
+              <div
+                className="hero-search-divider"
+                aria-hidden="true"
+              />
 
               <div className="hero-search-field">
                 <svg
@@ -256,6 +459,7 @@ export default function Home() {
                     stroke="currentColor"
                     strokeWidth="1.8"
                   />
+
                   <circle
                     cx="12"
                     cy="10.5"
@@ -341,7 +545,9 @@ export default function Home() {
                 className="qualification-card"
               >
                 <span className="qualification-icon">
-                  {qualification.icon}
+                  <QualificationIcon
+                    type={qualification.icon}
+                  />
                 </span>
 
                 <span className="qualification-card-content">
@@ -361,7 +567,9 @@ export default function Home() {
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">OPPORTUNITIES</p>
+              <p className="eyebrow">
+                OPPORTUNITIES
+              </p>
 
               <h2 className="section-title">
                 Latest Jobs
