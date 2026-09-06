@@ -1,331 +1,536 @@
 "use client";
-import {
-  Suspense,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import JobCard from "../../components/JobCard";
-import JobFilters from "../../components/JobFilters";
 import { createClient } from "../../lib/supabase/client";
+import JobCard from "../../components/JobCard";
+
 type Job = {
   id: string;
-  // Primary recruitment fields
-  title: string;
-  organization: string;
-  department: string;
-  post_name: string;
+
+  // Current recruitment fields
+  organization: string | null;
+  department: string | null;
+  post_name: string | null;
   total_vacancy: number | null;
-  state: string;
-  location: string;
-  qualification: string;
+  state: string | null;
   age_starts: number | null;
-  age_limit: string;
-  age_relaxation: string;
-  application_mode: string;
-  application_fee: string;
+  age_limit: number | null;
+  age_relaxation: string | null;
+  application_mode: string | null;
+  application_fee: string | null;
   start_date: string | null;
   last_date: string | null;
   exam_date: string | null;
-  salary: string;
-  selection_process: string;
-  documents_required: string;
-  notification_url: string;
-  // Legacy / compatibility fields
-  company: string;
-  type: string;
-  experience: string;
-  description: string;
-  apply_url: string;
-  // System fields
+  salary: string | null;
+  selection_process: string | null;
+  documents_required: string | null;
+  notification_url: string | null;
+
+  // Existing / legacy fields
+  company: string | null;
+  title: string | null;
+  location: string | null;
+  type: string | null;
+  experience: string | null;
+  qualification: string | null;
+  description: string | null;
+  apply_url: string | null;
   is_active: boolean;
   created_at: string;
 };
-const qualificationMap: Record<string, string> = {
-  "8th-pass": "8th Pass",
-  "10th-pass": "10th Pass",
-  "12th-pass": "12th Pass",
-  diploma: "Diploma",
-  graduate: "Graduate",
-};
-function JobsPageContent() {
+
+const qualificationOptions = [
+  { label: "All Qualifications", value: "" },
+  { label: "8th Pass", value: "8th-pass" },
+  { label: "10th Pass", value: "10th-pass" },
+  { label: "12th Pass", value: "12th-pass" },
+  { label: "Diploma", value: "diploma" },
+  { label: "ITI", value: "iti" },
+  { label: "Graduate", value: "graduate" },
+  { label: "Post Graduate", value: "post-graduate" },
+];
+
+function normalizeQualification(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function qualificationMatches(
+  qualification: string | null,
+  filter: string
+) {
+  if (!filter) {
+    return true;
+  }
+
+  if (!qualification) {
+    return false;
+  }
+
+  const jobQualification =
+    normalizeQualification(qualification);
+
+  const requestedQualification =
+    normalizeQualification(filter);
+
+  const aliases: Record<string, string[]> = {
+    "8th-pass": [
+      "8th-pass",
+      "8th",
+      "8-pass",
+      "class-8",
+      "class-8th",
+    ],
+
+    "10th-pass": [
+      "10th-pass",
+      "10th",
+      "10-pass",
+      "class-10",
+      "class-10th",
+      "matric",
+      "matriculation",
+    ],
+
+    "12th-pass": [
+      "12th-pass",
+      "12th",
+      "12-pass",
+      "class-12",
+      "class-12th",
+      "intermediate",
+      "higher-secondary",
+    ],
+
+    diploma: [
+      "diploma",
+      "polytechnic",
+    ],
+
+    iti: [
+      "iti",
+      "i.t.i",
+      "industrial-training-institute",
+    ],
+
+    graduate: [
+      "graduate",
+      "graduation",
+      "bachelor",
+      "bachelors",
+      "degree",
+      "ug",
+    ],
+
+    "post-graduate": [
+      "post-graduate",
+      "postgraduate",
+      "pg",
+      "masters",
+      "master",
+      "m.tech",
+      "mtech",
+      "mba",
+      "mca",
+      "ma",
+      "msc",
+      "m.sc",
+      "m.com",
+      "mcom",
+    ],
+  };
+
+  const accepted =
+    aliases[requestedQualification] || [
+      requestedQualification,
+    ];
+
+  return accepted.some((item) => {
+    const normalizedItem =
+      normalizeQualification(item);
+
+    return (
+      jobQualification === normalizedItem ||
+      jobQualification.includes(normalizedItem) ||
+      normalizedItem.includes(jobQualification)
+    );
+  });
+}
+
+function formatDate(dateString: string | null) {
+  if (!dateString) {
+    return "Not specified";
+  }
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function JobsContent() {
   const searchParams = useSearchParams();
-  const initialQualification =
-    searchParams.get("qualification") || "";
+
   const initialSearch =
     searchParams.get("search") || "";
-  const [search, setSearch] = useState(initialSearch);
+
+  const initialQualification =
+    searchParams.get("qualification") || "";
+
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const selectedQualification =
-    qualificationMap[initialQualification] || "";
+  const [search, setSearch] =
+    useState(initialSearch);
+  const [qualification, setQualification] =
+    useState(initialQualification);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  useEffect(() => {
+    setSearch(
+      searchParams.get("search") || ""
+    );
+
+    setQualification(
+      searchParams.get("qualification") || ""
+    );
+  }, [searchParams]);
+
   useEffect(() => {
     async function loadJobs() {
+      setLoading(true);
+      setError("");
+
       const supabase = createClient();
+
       const { data, error } = await supabase
         .from("jobs")
-        .select(
-          `
-            id,
-            title,
-            organization,
-            department,
-            post_name,
-            total_vacancy,
-            state,
-            location,
-            qualification,
-            age_starts,
-            age_limit,
-            age_relaxation,
-            application_mode,
-            application_fee,
-            start_date,
-            last_date,
-            exam_date,
-            salary,
-            selection_process,
-            documents_required,
-            notification_url,
-            company,
-            type,
-            experience,
-            description,
-            apply_url,
-            is_active,
-            created_at
-          `
-        )
+        .select("*")
         .eq("is_active", true)
         .order("created_at", {
           ascending: false,
         });
+
       if (error) {
-        console.error("Error loading jobs:", error);
-        setError("Unable to load jobs right now.");
+        console.error(
+          "Error loading jobs:",
+          error
+        );
+
+        setError(
+          "Unable to load jobs right now. Please try again."
+        );
+
         setJobs([]);
-      } else {
-        setJobs((data || []) as Job[]);
+        setLoading(false);
+        return;
       }
+
+      setJobs((data || []) as Job[]);
       setLoading(false);
     }
+
     loadJobs();
   }, []);
+
   const filteredJobs = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const searchTerm =
+      search.trim().toLowerCase();
+
     return jobs.filter((job) => {
-      const searchableValues = [
+      const matchesQualification =
+        qualificationMatches(
+          job.qualification,
+          qualification
+        );
+
+      if (!matchesQualification) {
+        return false;
+      }
+
+      if (!searchTerm) {
+        return true;
+      }
+
+      const searchableText = [
         job.organization,
-        job.title,
-        job.post_name,
         job.department,
-        job.state,
-        job.location,
-        job.qualification,
-        job.salary,
-        job.application_mode,
-        // Legacy fields retained for older records
+        job.post_name,
         job.company,
+        job.title,
+        job.location,
+        job.state,
+        job.qualification,
         job.type,
         job.experience,
-      ];
-      const matchesSearch =
-        !query ||
-        searchableValues.some(
-          (value) =>
-            value &&
-            value.toLowerCase().includes(query)
-        );
-      const matchesQualification =
-        !selectedQualification ||
-        job.qualification === selectedQualification;
-      return (
-        matchesSearch &&
-        matchesQualification
+        job.salary,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(
+        searchTerm
       );
     });
-  }, [jobs, search, selectedQualification]);
-  if (loading) {
-    return (
-      <main className="content-page">
+  }, [
+    jobs,
+    search,
+    qualification,
+  ]);
+
+  function clearFilters() {
+    setSearch("");
+    setQualification("");
+  }
+
+  return (
+    <main className="jobs-page">
+      <section className="jobs-page-header">
         <div className="container">
-          <p className="eyebrow">OPPORTUNITIES</p>
-          <h1>Find Your Next Opportunity</h1>
-          <p className="page-intro">
-            Loading opportunities...
+          <p className="eyebrow">
+            EXPLORE OPPORTUNITIES
+          </p>
+
+          <h1 className="page-title">
+            Find Your Next Job
+          </h1>
+
+          <p className="page-description">
+            Explore the latest job opportunities and
+            find the one that matches your
+            qualification and goals.
           </p>
         </div>
-      </main>
-    );
-  }
-  if (error) {
-    return (
-      <main className="content-page">
+      </section>
+
+      <section className="jobs-section">
         <div className="container">
-          <p className="eyebrow">OPPORTUNITIES</p>
-          <h1>Find Your Next Opportunity</h1>
-          <div className="card">
-            <div className="card-content">
-              <h3 className="card-title">
-                Unable to load jobs
-              </h3>
-              <p className="card-description">
-                {error}
-              </p>
+          <div className="jobs-filter-panel">
+            <div className="jobs-filter-search">
+              <label htmlFor="job-search">
+                Search jobs
+              </label>
+
+              <input
+                id="job-search"
+                type="search"
+                value={search}
+                onChange={(event) =>
+                  setSearch(
+                    event.target.value
+                  )
+                }
+                placeholder="Search by job, organization, location..."
+              />
             </div>
+
+            <div className="jobs-filter-select">
+              <label htmlFor="qualification">
+                Qualification
+              </label>
+
+              <select
+                id="qualification"
+                value={qualification}
+                onChange={(event) =>
+                  setQualification(
+                    event.target.value
+                  )
+                }
+              >
+                {qualificationOptions.map(
+                  (option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            {(search ||
+              qualification) && (
+              <button
+                type="button"
+                className="button button-secondary jobs-clear-button"
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
-        </div>
-      </main>
-    );
-  }
-  return (
-    <main className="content-page">
-      <div className="container">
-        <p className="eyebrow">OPPORTUNITIES</p>
-        <h1>Find Your Next Opportunity</h1>
-        <p className="page-intro">
-          Explore job opportunities and find
-          recruitment updates that match your
-          qualification, location and career goals.
-        </p>
-        <JobFilters
-          value={search}
-          onChange={setSearch}
-        />
-        {selectedQualification && (
-          <div
-            style={{
-              marginTop: "18px",
-              padding: "12px 14px",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-md)",
-              background: "var(--surface-blue)",
-              color: "var(--text-secondary)",
-              fontSize: "13px",
-            }}
-          >
-            Showing jobs for{" "}
-            <strong
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              {selectedQualification}
-            </strong>
-          </div>
-        )}
-        <section
-          className="section"
-          style={{
-            padding: "38px 0 0",
-          }}
-        >
-          <div className="section-heading">
+
+          <div className="jobs-results-heading">
             <div>
-              <p className="eyebrow">
-                AVAILABLE JOBS
-              </p>
-              <h2 className="section-title">
-                {filteredJobs.length > 0
-                  ? `${filteredJobs.length} ${
-                      filteredJobs.length === 1
-                        ? "Opportunity"
-                        : "Opportunities"
-                    }`
-                  : "No Opportunities Found"}
+              <h2>
+                {filteredJobs.length}{" "}
+                {filteredJobs.length === 1
+                  ? "Job"
+                  : "Jobs"}{" "}
+                Found
               </h2>
-              <p className="section-description">
-                {search
-                  ? `Showing results matching "${search}".`
-                  : selectedQualification
-                  ? `Browse available ${selectedQualification.toLowerCase()} opportunities.`
-                  : "Browse the latest recruitment opportunities available on Jobsera."}
-              </p>
+
+              {qualification && (
+                <p>
+                  Showing jobs for{" "}
+                  <strong>
+                    {
+                      qualificationOptions.find(
+                        (option) =>
+                          option.value ===
+                          qualification
+                      )?.label ||
+                      qualification
+                    }
+                  </strong>
+                </p>
+              )}
             </div>
           </div>
-          {filteredJobs.length > 0 ? (
-            <div className="job-list">
-              {filteredJobs.map((job) => (
-                <JobCard
-                  key={job.id}
-                  id={job.id}
-                  organization={
-                    job.organization ||
-                    job.company ||
-                    "Organization not specified"
-                  }
-                  title={job.title}
-                  post_name={
-                    job.post_name || ""
-                  }
-                  state={job.state || ""}
-                  location={
-                    job.location || ""
-                  }
-                  qualification={
-                    job.qualification || ""
-                  }
-                  total_vacancy={
-                    job.total_vacancy
-                  }
-                  last_date={
-                    job.last_date
-                  }
-                  date={
-                    job.created_at
-                      ? new Date(
-                          job.created_at
-                        ).toLocaleDateString(
-                          "en-IN",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          }
-                        )
-                      : undefined
-                  }
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="card">
-              <div className="card-content">
-                <h3 className="card-title">
-                  No jobs match your search.
-                </h3>
-                <p className="card-description">
-                  Try another keyword or choose a
-                  different qualification.
-                </p>
-              </div>
+
+          {loading && (
+            <div className="jobs-empty-state">
+              <p>Loading jobs...</p>
             </div>
           )}
-        </section>
-      </div>
+
+          {!loading && error && (
+            <div className="jobs-empty-state">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!loading &&
+            !error &&
+            filteredJobs.length === 0 && (
+              <div className="jobs-empty-state">
+                <h3>
+                  No jobs found
+                </h3>
+
+                <p>
+                  Try changing your search or
+                  qualification filter.
+                </p>
+
+                <button
+                  type="button"
+                  className="button button-primary"
+                  onClick={clearFilters}
+                >
+                  View All Jobs
+                </button>
+              </div>
+            )}
+
+          {!loading &&
+            !error &&
+            filteredJobs.length > 0 && (
+              <div className="job-list">
+                {filteredJobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    id={job.id}
+                    organization={
+                      job.organization ||
+                      job.company ||
+                      "Organization not specified"
+                    }
+                    title={
+                      job.title ||
+                      job.post_name ||
+                      "Job opportunity"
+                    }
+                    post_name={
+                      job.post_name || ""
+                    }
+                    state={
+                      job.state || ""
+                    }
+                    location={
+                      job.location || ""
+                    }
+                    qualification={
+                      job.qualification || ""
+                    }
+                    total_vacancy={
+                      job.total_vacancy
+                    }
+                    last_date={
+                      job.last_date
+                    }
+                    date={formatDate(
+                      job.created_at
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+        </div>
+      </section>
+
+      <section className="jobs-bottom-cta">
+        <div className="container">
+          <div className="jobs-cta-card">
+            <div>
+              <p className="eyebrow">
+                JOBSERA
+              </p>
+
+              <h2>
+                Looking for your next opportunity?
+              </h2>
+
+              <p>
+                Keep checking Jobsera for the latest
+                opportunities.
+              </p>
+            </div>
+
+            <Link
+              href="/"
+              className="button button-primary"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
+
 export default function JobsPage() {
   return (
     <Suspense
       fallback={
-        <main className="content-page">
-          <div className="container">
-            <p className="eyebrow">
-              OPPORTUNITIES
-            </p>
-            <h1>Find Your Next Opportunity</h1>
-            <p className="page-intro">
-              Loading opportunities...
-            </p>
-          </div>
+        <main className="jobs-page">
+          <section className="jobs-empty-state">
+            <p>Loading jobs...</p>
+          </section>
         </main>
       }
     >
-      <JobsPageContent />
+      <JobsContent />
     </Suspense>
   );
 }
