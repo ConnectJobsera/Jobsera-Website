@@ -589,7 +589,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 18px;
-  margin: 48px auto 8px;
+  margin: 56px auto 48px;
 }
 
 .pagination-numbers {
@@ -663,7 +663,7 @@ main {
 ================================ */
 
 .jobs-results-heading {
-  margin-bottom: 28px;
+  margin-bottom: 38px;
 }
 
 .jobs-results-heading h2 {
@@ -674,7 +674,7 @@ main {
 }
 
 .jobs-results-heading p {
-  margin-top: 6px;
+  margin-top: 12px;
   color: var(--text-secondary);
   font-size: 13px;
 }
@@ -703,7 +703,8 @@ main {
 }
 
 .jobs-bottom-cta {
-  padding-bottom: 20px;
+  padding-top: 24px;
+  padding-bottom: 32px;
 }
 
 .jobs-cta-card {
