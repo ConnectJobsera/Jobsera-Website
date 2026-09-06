@@ -1900,3 +1900,201 @@ main {
 .jobs-section {
   padding-top: 0;
   }
+/* ================================
+   BLOG SEARCH & PAGINATION
+================================ */
+
+.blogs-search-form {
+  margin-bottom: 32px;
+}
+
+.blogs-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 760px;
+  padding: 8px 8px 8px 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.blogs-search-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: #64748b;
+}
+
+.blogs-search input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #111827;
+  font: inherit;
+}
+
+.blogs-search input::placeholder {
+  color: #94a3b8;
+}
+
+.blogs-search .button {
+  flex: 0 0 auto;
+}
+
+.blogs-results-heading {
+  margin: 0 0 22px;
+}
+
+.blogs-results-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.blogs-results-heading strong {
+  color: #111827;
+}
+
+.blogs-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 42px;
+}
+
+.blogs-pagination .pagination-numbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.blogs-pagination .pagination-button,
+.blogs-pagination .pagination-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.blogs-pagination .pagination-number {
+  min-width: 42px;
+  padding: 0;
+}
+
+.blogs-pagination .pagination-button:hover,
+.blogs-pagination .pagination-number:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.blogs-pagination .pagination-current {
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.blogs-pagination .pagination-current:hover {
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.blogs-pagination .pagination-disabled {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+
+/* ================================
+   BLOG RESPONSIVE
+================================ */
+
+@media (max-width: 700px) {
+  .blogs-search {
+    gap: 8px;
+    padding-left: 14px;
+  }
+
+  .blogs-search .button {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .blogs-pagination {
+    gap: 6px;
+  }
+
+  .blogs-pagination .pagination-numbers {
+    gap: 4px;
+  }
+
+  .blogs-pagination .pagination-button,
+  .blogs-pagination .pagination-number {
+    min-width: 36px;
+    height: 38px;
+    padding: 0 9px;
+    font-size: 13px;
+  }
+
+  .blogs-pagination .pagination-number {
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .blogs-search {
+    padding: 6px 6px 6px 12px;
+  }
+
+  .blogs-search-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .blogs-search input {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .blogs-search .button {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .blogs-pagination .pagination-button {
+    font-size: 0;
+    width: 38px;
+    padding: 0;
+  }
+
+  .blogs-pagination .pagination-button:first-child::before {
+    content: "‹";
+    font-size: 22px;
+  }
+
+  .blogs-pagination .pagination-button:last-child::before {
+    content: "›";
+    font-size: 22px;
+  }
+}
