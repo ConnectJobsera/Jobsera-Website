@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import HomeHighlight from "../components/HomeHighlight";
 import JobCard from "../components/JobCard";
 import { createClient } from "../lib/supabase/client";
@@ -10,7 +10,13 @@ type Qualification = {
   label: string;
   value: string;
   href: string;
-  icon: "10th" | "12th" | "graduate" | "postgraduate" | "diploma" | "iti";
+  icon:
+    | "10th"
+    | "12th"
+    | "graduate"
+    | "postgraduate"
+    | "diploma"
+    | "iti";
 };
 
 const qualifications: Qualification[] = [
@@ -78,9 +84,13 @@ type HomeHighlightRow = {
 };
 
 const defaultHighlight: HomeHighlightRow = {
-  text: "New opportunities are waiting for you — explore the latest jobs on Jobsera.",
+  text: "New opportunities added daily — Explore the latest jobs and take the next step in your career.",
   link: "/jobs",
 };
+
+function normalizeQualification(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
 
 function formatJobDate(dateString: string) {
   const date = new Date(dateString);
@@ -104,13 +114,6 @@ function formatJobDate(dateString: string) {
   });
 }
 
-function normalizeQualification(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-}
-
 function QualificationIcon({
   type,
 }: {
@@ -127,10 +130,7 @@ function QualificationIcon({
 
   if (type === "diploma") {
     return (
-      <svg
-        {...common}
-        className="qualification-icon qualification-icon-diploma"
-      >
+      <svg {...common}>
         <rect
           x="13"
           y="7"
@@ -152,10 +152,7 @@ function QualificationIcon({
 
   if (type === "iti") {
     return (
-      <svg
-        {...common}
-        className="qualification-icon qualification-icon-iti"
-      >
+      <svg {...common}>
         <circle
           cx="24"
           cy="20"
@@ -179,10 +176,7 @@ function QualificationIcon({
 
   if (type === "postgraduate") {
     return (
-      <svg
-        {...common}
-        className="qualification-icon qualification-icon-postgraduate"
-      >
+      <svg {...common}>
         <path
           d="M7 17 24 9l17 8-17 8L7 17Z"
           fill="currentColor"
@@ -205,10 +199,7 @@ function QualificationIcon({
 
   if (type === "12th") {
     return (
-      <svg
-        {...common}
-        className="qualification-icon qualification-icon-12th"
-      >
+      <svg {...common}>
         <rect
           x="8"
           y="11"
@@ -224,7 +215,12 @@ function QualificationIcon({
           strokeWidth="3"
           strokeLinecap="round"
         />
-        <circle cx="34" cy="35" r="7" fill="currentColor" />
+        <circle
+          cx="34"
+          cy="35"
+          r="7"
+          fill="currentColor"
+        />
         <path
           d="m31 35 2 2 4-5"
           stroke="white"
@@ -236,41 +232,8 @@ function QualificationIcon({
     );
   }
 
-  if (type === "graduate") {
-    return (
-      <svg
-        {...common}
-        className="qualification-icon qualification-icon-graduate"
-      >
-        <path
-          d="M5 16 24 7l19 9-19 9L5 16Z"
-          fill="currentColor"
-        />
-        <path
-          d="M12 21v10c6 5 18 5 24 0V21"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path
-          d="M43 18v12"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path
-          d="M21 31h6v7h-6z"
-          fill="currentColor"
-        />
-      </svg>
-    );
-  }
-
   return (
-    <svg
-      {...common}
-      className="qualification-icon qualification-icon-10th"
-    >
+    <svg {...common}>
       <path
         d="M5 16 24 7l19 9-19 9L5 16Z"
         fill="currentColor"
@@ -295,8 +258,81 @@ function QualificationIcon({
   );
 }
 
+function SearchIcon() {
+  return (
+    <svg
+      width="21"
+      height="21"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle
+        cx="11"
+        cy="11"
+        r="6.5"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="m16 16 4.5 4.5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg
+      width="21"
+      height="21"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 10.5c0 5.5-8 11-8 11s-8-5.5-8-11a8 8 0 1 1 16 0Z"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <circle
+        cx="12"
+        cy="10"
+        r="2.5"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12h13M13 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function Home() {
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [notificationMessage, setNotificationMessage] =
+    useState("");
+
   const [jobs, setJobs] = useState<HomeJob[]>([]);
   const [articles, setArticles] = useState<HomeArticle[]>([]);
   const [highlight, setHighlight] =
@@ -304,6 +340,9 @@ export default function Home() {
 
   const [qualificationCounts, setQualificationCounts] =
     useState<Record<string, number>>({});
+
+  const [heroSearch, setHeroSearch] = useState("");
+  const [heroLocation, setHeroLocation] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
@@ -321,7 +360,9 @@ export default function Home() {
             "id, title, organization, post_name, state, location, qualification, total_vacancy, last_date, created_at"
           )
           .eq("is_active", true)
-          .order("created_at", { ascending: false })
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(3),
 
         supabase
@@ -330,14 +371,18 @@ export default function Home() {
             "slug, category, title_en, description_en"
           )
           .eq("is_published", true)
-          .order("created_at", { ascending: false })
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(3),
 
         supabase
           .from("highlights")
           .select("text, link")
           .eq("is_active", true)
-          .order("created_at", { ascending: false })
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(1),
 
         supabase
@@ -351,7 +396,9 @@ export default function Home() {
       }
 
       if (blogsResult.data) {
-        setArticles(blogsResult.data as HomeArticle[]);
+        setArticles(
+          blogsResult.data as HomeArticle[]
+        );
       }
 
       if (
@@ -367,7 +414,9 @@ export default function Home() {
         const counts: Record<string, number> = {};
 
         qualificationResult.data.forEach((row) => {
-          if (typeof row.qualification !== "string") {
+          if (
+            typeof row.qualification !== "string"
+          ) {
             return;
           }
 
@@ -379,7 +428,8 @@ export default function Home() {
             return;
           }
 
-          counts[value] = (counts[value] || 0) + 1;
+          counts[value] =
+            (counts[value] || 0) + 1;
         });
 
         setQualificationCounts(counts);
@@ -397,6 +447,29 @@ export default function Home() {
     );
   }
 
+  function handleHeroSearch(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const keyword = heroSearch.trim();
+    const location = heroLocation.trim();
+
+    const combinedQuery = [keyword, location]
+      .filter(Boolean)
+      .join(" ");
+
+    if (!combinedQuery) {
+      window.location.href = "/jobs";
+      return;
+    }
+
+    window.location.href =
+      `/jobs?search=${encodeURIComponent(
+        combinedQuery
+      )}`;
+  }
+
   function handleNotifications() {
     setNotificationMessage(
       "Notifications will be available soon."
@@ -405,96 +478,242 @@ export default function Home() {
 
   return (
     <>
-      {/* =========================
-          HERO
-      ========================== */}
       <section className="hero">
-        <div className="container">
+        <div className="hero-orb hero-orb-pink" />
+        <div className="hero-orb hero-orb-blue" />
+        <div className="hero-orb hero-orb-yellow" />
+
+        <div className="container hero-container">
           <div className="hero-content">
-            <p className="eyebrow hero-eyebrow">
+            <p className="hero-eyebrow">
               YOUR NEXT OPPORTUNITY STARTS HERE
             </p>
 
             <h1 className="hero-title">
               Find Opportunities.
               <br />
-              Build <span>Your Future.</span>
+              Build{" "}
+              <span>Your Future.</span>
             </h1>
 
             <p className="hero-description">
-              Discover the right job opportunities and take
-              the next step in your career with Jobsera.
+              Discover the right job opportunities and
+              take the next step in your career with
+              Jobsera.
             </p>
+
+            <form
+              className="hero-search"
+              onSubmit={handleHeroSearch}
+              role="search"
+            >
+              <div className="hero-search-field">
+                <span className="hero-search-icon">
+                  <SearchIcon />
+                </span>
+
+                <input
+                  type="search"
+                  value={heroSearch}
+                  onChange={(event) =>
+                    setHeroSearch(event.target.value)
+                  }
+                  placeholder="Job title, keywords or company"
+                  aria-label="Job title, keywords or company"
+                />
+              </div>
+
+              <div className="hero-search-divider" />
+
+              <div className="hero-search-field hero-search-location">
+                <span className="hero-search-icon">
+                  <LocationIcon />
+                </span>
+
+                <input
+                  type="search"
+                  value={heroLocation}
+                  onChange={(event) =>
+                    setHeroLocation(event.target.value)
+                  }
+                  placeholder="Location"
+                  aria-label="Location"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="hero-search-button"
+              >
+                <span>Search Jobs</span>
+                <ArrowIcon />
+              </button>
+            </form>
+          </div>
+
+          <div
+            className="hero-doodles"
+            aria-hidden="true"
+          >
+            <div className="doodle-circle doodle-circle-one" />
+            <div className="doodle-circle doodle-circle-two" />
+
+            <svg
+              className="doodle-plane"
+              viewBox="0 0 120 100"
+              fill="none"
+            >
+              <path
+                d="M8 47 105 10 76 82 54 56 8 47Z"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M54 56 105 10 61 63"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            <svg
+              className="doodle-flight"
+              viewBox="0 0 330 150"
+              fill="none"
+            >
+              <path
+                d="M12 115C67 40 115 137 170 71S264 22 316 57"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeDasharray="8 9"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            <div className="doodle-spark doodle-spark-one">
+              /
+            </div>
+
+            <div className="doodle-spark doodle-spark-two">
+              ✦
+            </div>
+
+            <div className="doodle-spark doodle-spark-three">
+              /
+            </div>
+
+            <div className="doodle-note">
+              <span>Better</span>
+              <span>Jobs</span>
+              <span>Brighter</span>
+              <span>Future</span>
+
+              <svg viewBox="0 0 120 70" fill="none">
+                <path
+                  d="M5 10C37 3 82 20 103 51"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="m91 48 13 3-5 12"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* =========================
-          HIGHLIGHT / ANNOUNCEMENT
-      ========================== */}
       <HomeHighlight
         text={highlight.text}
         href={highlight.link}
       />
 
-      {/* =========================
-          JOBS BY QUALIFICATION
-      ========================== */}
       <section className="section qualification-section">
         <div className="container">
-          <div className="section-heading qualification-heading">
-            <div>
-              <p className="eyebrow">
-                FIND YOUR OPPORTUNITY
-              </p>
+          <div className="qualification-heading">
+            <p className="eyebrow">
+              FIND YOUR OPPORTUNITY
+            </p>
 
-              <h2 className="section-title">
-                Jobs By Qualification
-              </h2>
+            <h2 className="section-title">
+              Jobs By Qualification
+            </h2>
 
-              <p className="section-description">
-                Browse jobs based on your qualification and
-                find opportunities that match your skills.
-              </p>
-            </div>
+            <p className="section-description">
+              Browse jobs based on your qualification and
+              find opportunities that match your skills.
+            </p>
+          </div>
+
+          <div className="qualification-doodle" aria-hidden="true">
+            <span>Your</span>
+            <span>Qualification</span>
+            <span>Your Chance</span>
+            <svg viewBox="0 0 120 60" fill="none">
+              <path
+                d="M5 25c34 16 71 10 104-12"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="m96 7 13 6-9 9"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
 
           <div className="qualification-grid qualification-grid-home">
-            {qualifications.map((qualification) => (
-              <Link
-                key={qualification.href}
-                href={qualification.href}
-                className={`qualification-card qualification-card-${qualification.icon}`}
-              >
-                <div className="qualification-icon-wrap">
-                  <QualificationIcon
-                    type={qualification.icon}
-                  />
-                </div>
+            {qualifications.map((qualification) => {
+              const count =
+                getQualificationCount(
+                  qualification.value
+                );
 
-                <strong>
-                  {qualification.label}
-                </strong>
+              return (
+                <Link
+                  key={qualification.href}
+                  href={qualification.href}
+                  className={`qualification-card qualification-card-${qualification.icon}`}
+                >
+                  <div className="qualification-icon-wrap">
+                    <QualificationIcon
+                      type={qualification.icon}
+                    />
+                  </div>
 
-                <span>
-                  {getQualificationCount(
-                    qualification.value
-                  )}{" "}
-                  {getQualificationCount(
-                    qualification.value
-                  ) === 1
-                    ? "Job"
-                    : "Jobs"}
-                </span>
-              </Link>
-            ))}
+                  <strong>
+                    {qualification.label}
+                  </strong>
+
+                  <span>
+                    {count}{" "}
+                    {count === 1 ? "Job" : "Jobs"}
+                  </span>
+
+                  <span
+                    className="qualification-arrow"
+                    aria-hidden="true"
+                  >
+                    <ArrowIcon />
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* =========================
-          LATEST JOBS
-      ========================== */}
       <section className="section section-muted">
         <div className="container">
           <div className="section-heading">
@@ -517,6 +736,9 @@ export default function Home() {
               className="button button-secondary"
             >
               View All Jobs
+              <span className="button-arrow">
+                →
+              </span>
             </Link>
           </div>
 
@@ -539,14 +761,22 @@ export default function Home() {
                     job.post_name ||
                     "Job opportunity"
                   }
-                  post_name={job.post_name || ""}
+                  post_name={
+                    job.post_name || ""
+                  }
                   state={job.state || ""}
-                  location={job.location || ""}
+                  location={
+                    job.location || ""
+                  }
                   qualification={
                     job.qualification || ""
                   }
-                  total_vacancy={job.total_vacancy}
-                  last_date={job.last_date}
+                  total_vacancy={
+                    job.total_vacancy
+                  }
+                  last_date={
+                    job.last_date
+                  }
                   date={formatJobDate(
                     job.created_at
                   )}
@@ -557,9 +787,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================
-          CAREER INSIGHTS
-      ========================== */}
       <section className="section">
         <div className="container">
           <div className="section-heading">
@@ -573,8 +800,8 @@ export default function Home() {
               </h2>
 
               <p className="section-description">
-                Practical career guidance to help you move
-                forward with confidence.
+                Practical career guidance to help you
+                make better career decisions.
               </p>
             </div>
 
@@ -583,38 +810,44 @@ export default function Home() {
               className="button button-secondary"
             >
               View All Articles
+              <span className="button-arrow">
+                →
+              </span>
             </Link>
           </div>
 
           <div className="card-grid">
             {articles.length === 0 ? (
               <p className="text-muted">
-                No published articles yet.
+                No published articles yet. Check back
+                soon.
               </p>
             ) : (
               articles.map((article) => (
                 <article
+                  className="card"
                   key={article.slug}
-                  className="content-card"
                 >
-                  <p className="card-category">
-                    {article.category}
-                  </p>
+                  <div className="card-content">
+                    <p className="card-category">
+                      {article.category}
+                    </p>
 
-                  <h3 className="card-title">
-                    {article.title_en}
-                  </h3>
+                    <h3 className="card-title">
+                      {article.title_en}
+                    </h3>
 
-                  <p className="card-description">
-                    {article.description_en}
-                  </p>
+                    <p className="card-description">
+                      {article.description_en}
+                    </p>
 
-                  <Link
-                    href={`/blogs/${article.slug}`}
-                    className="article-link"
-                  >
-                    Read Article →
-                  </Link>
+                    <Link
+                      href={`/blogs/${article.slug}`}
+                      className="article-link"
+                    >
+                      Read Article →
+                    </Link>
+                  </div>
                 </article>
               ))
             )}
@@ -622,9 +855,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================
-          NOTIFICATIONS
-      ========================== */}
       <section className="notification-section">
         <div className="container">
           <div className="notification-card">
@@ -634,13 +864,23 @@ export default function Home() {
               </p>
 
               <h2>
-                Stay updated with new job opportunities.
+                Stay updated with new job
+                opportunities.
               </h2>
 
               <p>
                 Get notified when new opportunities are
                 added to Jobsera.
               </p>
+
+              {notificationMessage && (
+                <p
+                  className="notification-status"
+                  role="status"
+                >
+                  {notificationMessage}
+                </p>
+              )}
             </div>
 
             <button
@@ -651,18 +891,6 @@ export default function Home() {
               Get Job Notifications
             </button>
           </div>
-
-          {notificationMessage && (
-            <p
-              className="text-muted"
-              style={{
-                marginTop: "12px",
-                fontSize: "13px",
-              }}
-            >
-              {notificationMessage}
-            </p>
-          )}
         </div>
       </section>
     </>
