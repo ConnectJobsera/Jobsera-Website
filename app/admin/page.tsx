@@ -94,6 +94,16 @@ export default async function AdminPage() {
               </p>
             </div>
           </Link>
+
+          <Link href="/admin/links" className="card">
+            <div className="card-content">
+              <p className="eyebrow">LINKS</p>
+              <h2 className="card-title">Manage Links</h2>
+              <p className="card-description">
+                Manage related links displayed across Jobsera pages.
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
     </main>
