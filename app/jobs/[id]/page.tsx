@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "../../../lib/supabase/server";
+import { getLang } from "../../../lib/get-lang";
+import { t } from "../../../lib/lang";
+import { translateCached } from "../../../lib/translate";
+import LinkBox from "../../../components/LinkBox";
+
 type JobDetailPageProps = {
   params: Promise<{
     id: string;
   }>;
 };
+
 type Job = {
   id: string;
-  // Primary recruitment fields
   title: string;
   organization: string;
   department: string;
@@ -29,7 +35,6 @@ type Job = {
   selection_process: string;
   documents_required: string;
   notification_url: string;
-  // Legacy / compatibility fields
   company: string;
   type: string;
   experience: string;
@@ -37,20 +42,19 @@ type Job = {
   apply_url: string;
   created_at: string;
 };
+
+const siteUrl = "https://www.thejobsera.com";
+
 function formatDate(date: string | null) {
   if (!date) return "";
-  return new Date(
-    `${date}T00:00:00`
-  ).toLocaleDateString("en-IN", {
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
-export default async function JobDetailPage({
-  params,
-}: JobDetailPageProps) {
-  const { id } = await params;
+
+async function getJob(id: string) {
   const supabase = await createClient();
   const { data: job, error } = await supabase
     .from("jobs")
@@ -88,313 +92,280 @@ export default async function JobDetailPage({
     .eq("id", id)
     .eq("is_active", true)
     .single();
+
   if (error || !job) {
+    return null;
+  }
+
+  return job as Job;
+}
+
+export async function generateMetadata({
+  params,
+}: JobDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const data = await getJob(id);
+
+  if (!data) {
+    return { title: "Job not found" };
+  }
+
+  const organization = data.organization || data.company || "Jobsera";
+  const title = `${data.title}${data.post_name ? ` — ${data.post_name}` : ""}`;
+  const description = (
+    data.description ||
+    data.selection_process ||
+    `${data.title} at ${organization}. Check eligibility, important dates and apply online.`
+  ).slice(0, 160);
+  const url = `${siteUrl}/jobs/${data.id}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
+
+export default async function JobDetailPage({
+  params,
+}: JobDetailPageProps) {
+  const { id } = await params;
+  const [data, lang] = await Promise.all([getJob(id), getLang()]);
+
+  if (!data) {
     notFound();
   }
-  const data = job as Job;
+
+  const job = data as Job;
   const organization =
-    data.organization ||
-    data.company ||
-    "Organization not specified";
-  const hasLegacyDescription =
-    Boolean(data.description?.trim());
+    job.organization || job.company || "Organization not specified";
+  const hasLegacyDescription = Boolean(job.description?.trim());
+
+  const [
+    title,
+    postName,
+    department,
+    qualification,
+    salary,
+    selectionProcess,
+    documentsRequired,
+    description,
+  ] = await Promise.all([
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "title", text: job.title, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "post_name", text: job.post_name, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "department", text: job.department, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "qualification", text: job.qualification, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "salary", text: job.salary, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "selection_process", text: job.selection_process, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "documents_required", text: job.documents_required, lang }),
+    translateCached({ sourceTable: "jobs", sourceId: job.id, field: "description", text: job.description, lang }),
+  ]);
+
+  const jobPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description:
+      job.description || job.selection_process || `${job.title} at ${organization}`,
+    identifier: {
+      "@type": "PropertyValue",
+      name: organization,
+      value: job.id,
+    },
+    datePosted: job.created_at,
+    ...(job.last_date ? { validThrough: `${job.last_date}T23:59:59+05:30` } : {}),
+    hiringOrganization: {
+      "@type": "Organization",
+      name: organization,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: job.location || undefined,
+        addressRegion: job.state || undefined,
+        addressCountry: "IN",
+      },
+    },
+    directApply: Boolean(job.apply_url),
+  };
+
   return (
     <main className="content-page">
       <div className="container">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingSchema) }}
+        />
+
         <Link href="/jobs" className="job-link">
-          ← Back to Jobs
+          {t(lang, "back_to_jobs")}
         </Link>
-        {/* HEADER */}
-        <div
-          style={{
-            marginTop: "28px",
-          }}
-        >
-          <p className="eyebrow">
-            {organization}
-          </p>
-          <h1>{data.title}</h1>
-          {data.post_name && (
-            <p
-              style={{
-                marginTop: "8px",
-                fontSize: "17px",
-                fontWeight: 600,
-                color: "var(--text-secondary)",
-              }}
-            >
-              {data.post_name}
+
+        <div style={{ marginTop: "28px" }}>
+          <p className="eyebrow">{organization}</p>
+          <h1>{title}</h1>
+          {postName && (
+            <p style={{ marginTop: "8px", fontSize: "17px", fontWeight: 600, color: "var(--text-secondary)" }}>
+              {postName}
             </p>
           )}
-          {data.department && (
-            <p
-              style={{
-                marginTop: "6px",
-                fontSize: "14px",
-                color: "var(--text-secondary)",
-              }}
-            >
-              {data.department}
+          {department && (
+            <p style={{ marginTop: "6px", fontSize: "14px", color: "var(--text-secondary)" }}>
+              {department}
             </p>
           )}
         </div>
-        {/* QUICK INFORMATION */}
+
         <section className="content-section">
-          <h2>Job Overview</h2>
-          <div
-            className="job-details"
-            style={{
-              marginTop: "16px",
-            }}
-          >
-            {data.state && (
-              <span>{data.state}</span>
+          <h2>{t(lang, "job_overview")}</h2>
+          <div className="job-details" style={{ marginTop: "16px" }}>
+            {job.state && <span>{job.state}</span>}
+            {job.location && <span>{job.location}</span>}
+            {qualification && <span>{qualification}</span>}
+            {job.total_vacancy !== null && job.total_vacancy !== undefined && (
+              <span>
+                {job.total_vacancy}{" "}
+                {job.total_vacancy === 1 ? t(lang, "vacancy_singular") : t(lang, "vacancy_plural")}
+              </span>
             )}
-            {data.location && (
-              <span>{data.location}</span>
-            )}
-            {data.qualification && (
-              <span>{data.qualification}</span>
-            )}
-            {data.total_vacancy !== null &&
-              data.total_vacancy !== undefined && (
-                <span>
-                  {data.total_vacancy}{" "}
-                  {data.total_vacancy === 1
-                    ? "Vacancy"
-                    : "Vacancies"}
-                </span>
-              )}
           </div>
         </section>
-        {/* IMPORTANT DATES */}
-        {(data.start_date ||
-          data.last_date ||
-          data.exam_date) && (
+
+        {(job.start_date || job.last_date || job.exam_date) && (
           <section className="content-section">
-            <h2>Important Dates</h2>
-            <div
-              style={{
-                display: "grid",
-                gap: "10px",
-                marginTop: "16px",
-              }}
-            >
-              {data.start_date && (
+            <h2>{t(lang, "important_dates")}</h2>
+            <div style={{ display: "grid", gap: "10px", marginTop: "16px" }}>
+              {job.start_date && (
                 <div>
-                  <strong>
-                    Application Start Date:
-                  </strong>{" "}
-                  {formatDate(data.start_date)}
+                  <strong>{t(lang, "application_start_date")}</strong> {formatDate(job.start_date)}
                 </div>
               )}
-              {data.last_date && (
+              {job.last_date && (
                 <div>
-                  <strong>
-                    Last Date:
-                  </strong>{" "}
-                  {formatDate(data.last_date)}
+                  <strong>{t(lang, "last_date_label")}</strong> {formatDate(job.last_date)}
                 </div>
               )}
-              {data.exam_date && (
+              {job.exam_date && (
                 <div>
-                  <strong>
-                    Exam Date:
-                  </strong>{" "}
-                  {formatDate(data.exam_date)}
+                  <strong>{t(lang, "exam_date_label")}</strong> {formatDate(job.exam_date)}
                 </div>
               )}
             </div>
           </section>
         )}
-        {/* ELIGIBILITY */}
-        {(data.qualification ||
-          data.age_starts !== null ||
-          data.age_limit ||
-          data.age_relaxation) && (
+
+        {(qualification || job.age_starts !== null || job.age_limit || job.age_relaxation) && (
           <section className="content-section">
-            <h2>Eligibility</h2>
-            <div
-              style={{
-                display: "grid",
-                gap: "10px",
-                marginTop: "16px",
-              }}
-            >
-              {data.qualification && (
+            <h2>{t(lang, "eligibility")}</h2>
+            <div style={{ display: "grid", gap: "10px", marginTop: "16px" }}>
+              {qualification && (
                 <div>
-                  <strong>
-                    Educational Qualification:
-                  </strong>{" "}
-                  {data.qualification}
+                  <strong>{t(lang, "educational_qualification")}</strong> {qualification}
                 </div>
               )}
-              {data.age_starts !== null &&
-                data.age_starts !== undefined && (
-                  <div>
-                    <strong>
-                      Starting Age:
-                    </strong>{" "}
-                    {data.age_starts} years
-                  </div>
-                )}
-              {data.age_limit && (
+              {job.age_starts !== null && job.age_starts !== undefined && (
                 <div>
-                  <strong>
-                    Age Limit:
-                  </strong>{" "}
-                  {data.age_limit}
+                  <strong>{t(lang, "starting_age")}</strong> {job.age_starts} {t(lang, "years_suffix")}
                 </div>
               )}
-              {data.age_relaxation && (
+              {job.age_limit && (
                 <div>
-                  <strong>
-                    Age Relaxation:
-                  </strong>{" "}
-                  {data.age_relaxation}
+                  <strong>{t(lang, "age_limit_label")}</strong> {job.age_limit}
+                </div>
+              )}
+              {job.age_relaxation && (
+                <div>
+                  <strong>{t(lang, "age_relaxation_label")}</strong> {job.age_relaxation}
                 </div>
               )}
             </div>
           </section>
         )}
-        {/* APPLICATION DETAILS */}
-        {(data.application_mode ||
-          data.application_fee) && (
+
+        {(job.application_mode || job.application_fee) && (
           <section className="content-section">
-            <h2>Application Details</h2>
-            <div
-              style={{
-                display: "grid",
-                gap: "10px",
-                marginTop: "16px",
-              }}
-            >
-              {data.application_mode && (
+            <h2>{t(lang, "application_details")}</h2>
+            <div style={{ display: "grid", gap: "10px", marginTop: "16px" }}>
+              {job.application_mode && (
                 <div>
-                  <strong>
-                    Application Mode:
-                  </strong>{" "}
-                  {data.application_mode}
+                  <strong>{t(lang, "application_mode_label")}</strong> {job.application_mode}
                 </div>
               )}
-              {data.application_fee && (
+              {job.application_fee && (
                 <div>
-                  <strong>
-                    Application Fee:
-                  </strong>{" "}
-                  {data.application_fee}
+                  <strong>{t(lang, "application_fee_label")}</strong> {job.application_fee}
                 </div>
               )}
             </div>
           </section>
         )}
-        {/* SALARY */}
-        {data.salary && (
+
+        <LinkBox groupKey="job_middle" lang={lang} />
+
+        {salary && (
           <section className="content-section">
-            <h2>Salary / Pay Scale</h2>
-            <p
-              style={{
-                marginTop: "12px",
-              }}
-            >
-              {data.salary}
-            </p>
+            <h2>{t(lang, "salary_heading")}</h2>
+            <p style={{ marginTop: "12px" }}>{salary}</p>
           </section>
         )}
-        {/* SELECTION PROCESS */}
-        {data.selection_process && (
+
+        {selectionProcess && (
           <section className="content-section">
-            <h2>Selection Process</h2>
-            <p
-              style={{
-                marginTop: "12px",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {data.selection_process}
-            </p>
+            <h2>{t(lang, "selection_process_heading")}</h2>
+            <p style={{ marginTop: "12px", whiteSpace: "pre-line" }}>{selectionProcess}</p>
           </section>
         )}
-        {/* DOCUMENTS */}
-        {data.documents_required && (
+
+        {documentsRequired && (
           <section className="content-section">
-            <h2>Documents Required</h2>
-            <p
-              style={{
-                marginTop: "12px",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {data.documents_required}
-            </p>
+            <h2>{t(lang, "documents_required_heading")}</h2>
+            <p style={{ marginTop: "12px", whiteSpace: "pre-line" }}>{documentsRequired}</p>
           </section>
         )}
-        {/* LEGACY DESCRIPTION */}
+
         {hasLegacyDescription && (
           <section className="content-section">
-            <h2>About this opportunity</h2>
-            <p
-              style={{
-                marginTop: "12px",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {data.description}
-            </p>
+            <h2>{t(lang, "about_opportunity")}</h2>
+            <p style={{ marginTop: "12px", whiteSpace: "pre-line" }}>{description}</p>
           </section>
         )}
-        {/* OFFICIAL LINKS */}
-        {(data.notification_url ||
-          data.apply_url) && (
+
+        {(job.notification_url || job.apply_url) && (
           <section className="content-section">
-            <h2>Official Links</h2>
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                flexWrap: "wrap",
-                marginTop: "16px",
-              }}
-            >
-              {data.notification_url && (
-                <a
-                  href={data.notification_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="button button-secondary"
-                >
-                  View Official Notification →
+            <h2>{t(lang, "official_links")}</h2>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "16px" }}>
+              {job.notification_url && (
+                <a href={job.notification_url} target="_blank" rel="noopener noreferrer" className="button button-secondary">
+                  {t(lang, "view_notification")}
                 </a>
               )}
-              {data.apply_url && (
-                <a
-                  href={data.apply_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="button button-primary"
-                >
-                  Apply Now →
+              {job.apply_url && (
+                <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="button button-primary">
+                  {t(lang, "apply_now")}
                 </a>
               )}
             </div>
           </section>
         )}
-        {/* CONTACT */}
+
+        <LinkBox groupKey="job_bottom" lang={lang} />
+
         <section className="contact-card">
-          <h2>
-            Interested in this opportunity?
-          </h2>
-          <p>
-            Review the recruitment information
-            carefully before applying. For enquiries
-            or application-related information,
-            contact Jobsera using the email address
-            below.
-          </p>
-          <a
-            href="mailto:connectjobsera@gmail.com"
-            className="contact-email"
-          >
+          <h2>{t(lang, "contact_heading")}</h2>
+          <p>{t(lang, "contact_body")}</p>
+          <a href="mailto:connectjobsera@gmail.com" className="contact-email">
             connectjobsera@gmail.com
           </a>
         </section>
