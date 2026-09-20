@@ -1,17 +1,6 @@
-import { cookies } from "next/headers";
-
 export type Lang = "en" | "hi";
 
 export const LANG_COOKIE = "jobsera_lang";
-
-// Server-side helper: read the visitor's chosen language from the cookie.
-// Defaults to English when no cookie is set (e.g. first visit).
-export async function getLang(): Promise<Lang> {
-  const cookieStore = await cookies();
-  const value = cookieStore.get(LANG_COOKIE)?.value;
-
-  return value === "hi" ? "hi" : "en";
-}
 
 // Static UI-string dictionary. These are translated once, by us, and never
 // hit the translation API — so the header/nav/buttons switch instantly with
@@ -56,3 +45,4 @@ export const dictionary = {
 export function t(lang: Lang, key: keyof (typeof dictionary)["en"]): string {
   return dictionary[lang][key];
 }
+
