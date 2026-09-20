@@ -4,8 +4,8 @@
   --jobsera-blue-light: #eef5ff;
   --jobsera-red: #ed1c24;
   --text-primary: #172033;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
+  --text-secondary: #47536b;
+  --text-muted: #6b7893;
   --background: #ffffff;
   --surface: #f8fafc;
   --surface-blue: #f6f9ff;
@@ -2172,3 +2172,77 @@ main {
     border-radius: 15px;
   }
 }
+
+/* ===== Related link boxes (homepage / job / blog pages) ===== */
+.link-box {
+  max-width: 460px;
+  margin: 32px auto;
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+}
+
+.link-box-heading {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.link-box-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-box-item {
+  padding: 11px 4px;
+  border-top: 1px solid var(--border);
+  color: var(--jobsera-blue);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.link-box-item:first-child {
+  border-top: none;
+}
+
+.link-box-item:hover,
+.link-box-item:active {
+  color: var(--jobsera-red);
+}
+
+@media (max-width: 640px) {
+  .link-box {
+    max-width: 100%;
+    margin: 24px 0;
+    padding: 16px 18px;
+  }
+}
+/* ===== Language toggle ===== */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lang-toggle:hover {
+  border-color: var(--jobsera-blue);
+  color: var(--jobsera-blue);
+}
+
