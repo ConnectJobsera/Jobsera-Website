@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { getLang } from "../lib/lang";
+import { getLang } from "../lib/get-lang";
 
 const siteUrl = "https://www.thejobsera.com";
 
