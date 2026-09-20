@@ -3,18 +3,22 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import LanguageToggle from "./LanguageToggle";
+import { dictionary, type Lang } from "../lib/lang";
 
-const menuItems = [
-  { label: "Home", href: "/" },
-  { label: "Jobs", href: "/jobs" },
-  { label: "Career Insights", href: "/blogs" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Terms & Conditions", href: "/terms" },
-  { label: "Privacy Policy", href: "/privacy" },
-];
+export default function Header({ lang = "en" }: { lang?: Lang }) {
+  const copy = dictionary[lang];
 
-export default function Header() {
+  const menuItems = [
+    { label: "Home", href: "/" },
+    { label: copy.nav_jobs, href: "/jobs" },
+    { label: copy.nav_blogs, href: "/blogs" },
+    { label: copy.nav_about, href: "/about" },
+    { label: copy.nav_contact, href: "/contact" },
+    { label: copy.nav_terms, href: "/terms" },
+    { label: copy.nav_privacy, href: "/privacy" },
+  ];
+
   const [menuOpen, setMenuOpen] =
     useState(false);
 
@@ -77,7 +81,7 @@ export default function Header() {
                 : "nav-link"
             }
           >
-            Jobs
+            {copy.nav_jobs}
           </Link>
 
           <Link
@@ -88,7 +92,7 @@ export default function Header() {
                 : "nav-link"
             }
           >
-            Career Insights
+            {copy.nav_blogs}
           </Link>
 
           <Link
@@ -99,7 +103,7 @@ export default function Header() {
                 : "nav-link"
             }
           >
-            About
+            {copy.nav_about}
           </Link>
 
           <Link
@@ -110,7 +114,7 @@ export default function Header() {
                 : "nav-link"
             }
           >
-            Contact
+            {copy.nav_contact}
           </Link>
         </nav>
 
@@ -151,17 +155,22 @@ export default function Header() {
                     event.target.value
                   )
                 }
-                placeholder="Search jobs..."
+                placeholder={copy.search_placeholder}
                 aria-label="Search jobs"
               />
             </form>
           )}
 
+          <LanguageToggle
+            lang={lang}
+            label={copy.lang_toggle_label}
+          />
+
           <Link
             href="/admin/login"
             className="header-login"
           >
-            Login
+            {copy.nav_login}
           </Link>
 
           <div className="header-menu-wrapper">
