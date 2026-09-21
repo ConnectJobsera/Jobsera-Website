@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { t, type Lang } from "../lib/lang";
 
 type BlogCardProps = {
   category: string;
   title: string;
   description: string;
   slug: string;
+  lang?: Lang;
 };
 
 export default function BlogCard({
@@ -12,6 +14,7 @@ export default function BlogCard({
   title,
   description,
   slug,
+  lang = "en",
 }: BlogCardProps) {
   return (
     <article className="card">
@@ -22,13 +25,11 @@ export default function BlogCard({
 
         <p className="card-description">{description}</p>
 
-        <Link
-          href={`/blogs/${slug}`}
-          className="article-link"
-        >
-          Read article →
+        <Link href={`/blogs/${slug}`} className="article-link">
+          {t(lang, "read_article_link")}
         </Link>
       </div>
     </article>
   );
 }
+
