@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { t, type Lang } from "../lib/lang";
 
 type JobCardProps = {
   id: string;
@@ -11,6 +12,7 @@ type JobCardProps = {
   total_vacancy?: number | null;
   last_date?: string | null;
   date?: string;
+  lang?: Lang;
 };
 
 export default function JobCard({
@@ -24,24 +26,17 @@ export default function JobCard({
   total_vacancy,
   last_date,
   date,
+  lang = "en",
 }: JobCardProps) {
   return (
     <article className="job-item">
       <div className="job-main">
-        <span className="job-company">
-          {organization}
-        </span>
+        <span className="job-company">{organization}</span>
 
         <h3 className="job-title">{title}</h3>
 
         {post_name && (
-          <p
-            style={{
-              margin: "4px 0 8px",
-              fontSize: "14px",
-              fontWeight: 600,
-            }}
-          >
+          <p style={{ margin: "4px 0 8px", fontSize: "14px", fontWeight: 600 }}>
             {post_name}
           </p>
         )}
@@ -50,25 +45,20 @@ export default function JobCard({
           {state && <span>{state}</span>}
           {location && <span>{location}</span>}
           {qualification && <span>{qualification}</span>}
-          {total_vacancy !== null &&
-            total_vacancy !== undefined && (
-              <span>
-                {total_vacancy}{" "}
-                {total_vacancy === 1
-                  ? "Vacancy"
-                  : "Vacancies"}
-              </span>
-            )}
+          {total_vacancy !== null && total_vacancy !== undefined && (
+            <span>
+              {total_vacancy}{" "}
+              {total_vacancy === 1 ? t(lang, "vacancy_singular") : t(lang, "vacancy_plural")}
+            </span>
+          )}
         </div>
       </div>
 
       <div className="job-side">
         {last_date && (
           <span className="job-date">
-            Last Date:{" "}
-            {new Date(
-              `${last_date}T00:00:00`
-            ).toLocaleDateString("en-IN", {
+            {t(lang, "last_date_label")}{" "}
+            {new Date(`${last_date}T00:00:00`).toLocaleDateString("en-IN", {
               day: "numeric",
               month: "short",
               year: "numeric",
@@ -76,17 +66,10 @@ export default function JobCard({
           </span>
         )}
 
-        {!last_date && date && (
-          <span className="job-date">
-            {date}
-          </span>
-        )}
+        {!last_date && date && <span className="job-date">{date}</span>}
 
-        <Link
-          href={`/jobs/${id}`}
-          className="job-link"
-        >
-          View Job →
+        <Link href={`/jobs/${id}`} className="job-link">
+          {t(lang, "view_job_link")}
         </Link>
       </div>
     </article>
