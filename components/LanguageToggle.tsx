@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { LANG_COOKIE, type Lang } from "../lib/lang";
 
 export default function LanguageToggle({
@@ -10,15 +9,17 @@ export default function LanguageToggle({
   lang: Lang;
   label: string;
 }) {
-  const router = useRouter();
-
   function toggle() {
     const next: Lang = lang === "en" ? "hi" : "en";
 
     // 1 year, root path, so every page reads the same choice.
     document.cookie = `${LANG_COOKIE}=${next}; path=/; max-age=31536000`;
 
-    router.refresh();
+    // A full reload (rather than router.refresh()) guarantees every page —
+    // including fully client-rendered ones like the jobs listing, which
+    // fetch their own data and read the cookie on mount — picks up the new
+    // language immediately and consistently.
+    window.location.reload();
   }
 
   return (
