@@ -32,6 +32,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default async function RootLayout({
@@ -42,8 +45,8 @@ export default async function RootLayout({
   const lang = await getLang();
 
   return (
-    <html lang={lang}>
-      <body>
+    <html lang={lang} translate="no">
+      <body className="notranslate">
         <Header lang={lang} />
 
         <main>{children}</main>
@@ -68,3 +71,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
