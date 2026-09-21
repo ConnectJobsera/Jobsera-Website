@@ -49,6 +49,47 @@ export const dictionary = {
     contact_heading: "Interested in this opportunity?",
     contact_body:
       "Review the recruitment information carefully before applying. For enquiries or application-related information, contact Jobsera using the email address below.",
+
+    // Jobs listing page
+    find_next_job: "Find Your Next Job",
+    jobs_page_description:
+      "Explore the latest job opportunities and find the one that matches your qualification and goals.",
+    search_jobs_label: "Search jobs",
+    search_jobs_input_placeholder: "Search by job, organization, location...",
+    qualification_label: "Qualification",
+    clear_filters: "Clear Filters",
+    job_singular: "Job",
+    job_plural: "Jobs",
+    found_suffix: "Found",
+    loading_jobs: "Loading jobs...",
+    no_jobs_found_heading: "No jobs found",
+    no_jobs_found_body: "Try changing your search or qualification filter.",
+    view_all_jobs: "View All Jobs",
+    previous_label: "← Previous",
+    next_label: "Next →",
+    view_job_link: "View Job →",
+    jobs_cta_heading: "Looking for your next opportunity?",
+    jobs_cta_body: "Keep checking Jobsera for the latest opportunities.",
+    back_to_home: "Back to Home",
+
+    // Blogs listing page
+    learn_prepare_grow: "Learn. Prepare. Grow.",
+    blogs_page_description:
+      "Practical career information, job search guidance and useful insights to help you make better decisions about your career.",
+    explore_career_resources: "Explore Career Resources",
+    explore_career_resources_desc:
+      "Read useful guides and insights designed to help you prepare for your next opportunity.",
+    search_insights_placeholder: "Search career insights...",
+    search_button: "Search",
+    showing_results_for: "Showing results for",
+    no_articles_found_heading: "No articles found.",
+    try_different_keyword: "Try searching with a different keyword.",
+    no_articles_available_heading: "No articles available yet.",
+    new_resources_soon: "New career resources will appear here soon.",
+    read_article_link: "Read article →",
+    unable_to_load_articles: "Unable to load articles",
+    try_again_later: "Please try again later.",
+    find_next_opportunity: "Find your next opportunity.",
   },
   hi: {
     nav_jobs: "नौकरियाँ",
@@ -92,9 +133,49 @@ export const dictionary = {
     contact_heading: "इस अवसर में रुचि है?",
     contact_body:
       "आवेदन करने से पहले भर्ती जानकारी को ध्यान से पढ़ें। पूछताछ या आवेदन से जुड़ी जानकारी के लिए नीचे दिए गए ईमेल पते पर Jobsera से संपर्क करें।",
+
+    find_next_job: "अपनी अगली नौकरी खोजें",
+    jobs_page_description:
+      "नवीनतम नौकरी के अवसर देखें और अपनी योग्यता व लक्ष्यों के अनुसार सही अवसर खोजें।",
+    search_jobs_label: "नौकरी खोजें",
+    search_jobs_input_placeholder: "नौकरी, संस्था, स्थान से खोजें...",
+    qualification_label: "योग्यता",
+    clear_filters: "फ़िल्टर हटाएं",
+    job_singular: "नौकरी",
+    job_plural: "नौकरियाँ",
+    found_suffix: "मिलीं",
+    loading_jobs: "नौकरियाँ लोड हो रही हैं...",
+    no_jobs_found_heading: "कोई नौकरी नहीं मिली",
+    no_jobs_found_body: "अपनी खोज या योग्यता फ़िल्टर बदलकर देखें।",
+    view_all_jobs: "सभी नौकरियाँ देखें",
+    previous_label: "← पिछला",
+    next_label: "अगला →",
+    view_job_link: "नौकरी देखें →",
+    jobs_cta_heading: "अपने अगले अवसर की तलाश है?",
+    jobs_cta_body: "नवीनतम अवसरों के लिए Jobsera देखते रहें।",
+    back_to_home: "मुखपृष्ठ पर वापस जाएँ",
+
+    learn_prepare_grow: "सीखें। तैयारी करें। आगे बढ़ें।",
+    blogs_page_description:
+      "आपके करियर से जुड़े बेहतर निर्णय लेने में मदद के लिए व्यावहारिक जानकारी और उपयोगी सुझाव।",
+    explore_career_resources: "करियर संसाधन देखें",
+    explore_career_resources_desc:
+      "अपने अगले अवसर की तैयारी में मदद के लिए उपयोगी गाइड और जानकारी पढ़ें।",
+    search_insights_placeholder: "करियर जानकारी खोजें...",
+    search_button: "खोजें",
+    showing_results_for: "के लिए परिणाम दिखा रहे हैं",
+    no_articles_found_heading: "कोई लेख नहीं मिला।",
+    try_different_keyword: "किसी अन्य शब्द से खोजने का प्रयास करें।",
+    no_articles_available_heading: "अभी तक कोई लेख उपलब्ध नहीं है।",
+    new_resources_soon: "नए करियर संसाधन जल्द ही यहाँ दिखेंगे।",
+    read_article_link: "लेख पढ़ें →",
+    unable_to_load_articles: "लेख लोड नहीं हो सके",
+    try_again_later: "कृपया बाद में पुनः प्रयास करें।",
+    find_next_opportunity: "अपना अगला अवसर खोजें।",
   },
 } as const;
 
 export function t(lang: Lang, key: keyof (typeof dictionary)["en"]): string {
   return dictionary[lang][key];
 }
+
