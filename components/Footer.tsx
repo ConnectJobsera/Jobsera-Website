@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { t, type Lang } from "../lib/lang";
 
-const footerLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms & Conditions", href: "/terms" },
-];
+export default function Footer({ lang = "en" }: { lang?: Lang }) {
+  const footerLinks = [
+    { label: t(lang, "nav_about"), href: "/about" },
+    { label: t(lang, "nav_contact"), href: "/contact" },
+    { label: t(lang, "nav_privacy"), href: "/privacy" },
+    { label: t(lang, "nav_terms"), href: "/terms" },
+  ];
 
-export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -61,10 +62,9 @@ export default function Footer() {
           <span>connectjobsera@gmail.com</span>
         </a>
 
-        <div className="footer-bottom">
-          © 2026 Jobsera. All rights reserved.
-        </div>
+        <div className="footer-bottom">{t(lang, "footer_copyright")}</div>
       </div>
     </footer>
   );
 }
+
