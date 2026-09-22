@@ -11,6 +11,21 @@ export default function TermsPage() {
           conditions.
         </p>
 
+        <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+          Effective date: September 23, 2026
+        </p>
+
+        <div className="content-section">
+          <h2>About Jobsera</h2>
+          <p>
+            Jobsera is an independently and informally operated project based
+            in India, providing career information and job listings as a
+            public service. It is not a registered company, recruitment
+            agency or employer, and does not charge users for access to its
+            content.
+          </p>
+        </div>
+
         <div className="content-section">
           <h2>Use of the Website</h2>
           <p>
@@ -40,6 +55,18 @@ export default function TermsPage() {
         </div>
 
         <div className="content-section">
+          <h2>Intellectual Property</h2>
+          <p>
+            The Jobsera name, logo, website design and original content are
+            the property of Jobsera unless otherwise noted. Job listings,
+            third-party links and referenced material remain the property of
+            their respective owners. You may not reproduce, distribute or
+            create derivative works from Jobsera&apos;s original content
+            without permission.
+          </p>
+        </div>
+
+        <div className="content-section">
           <h2>Content and Information</h2>
           <p>
             Information available on Jobsera may change from time to time.
@@ -58,10 +85,41 @@ export default function TermsPage() {
         </div>
 
         <div className="content-section">
+          <h2>Disclaimer of Warranties</h2>
+          <p>
+            Jobsera is provided on an &quot;as is&quot; and &quot;as
+            available&quot; basis without warranties of any kind, whether
+            express or implied. We do not guarantee that job listings,
+            articles or other content are complete, accurate or up to date,
+            or that the website will be uninterrupted or error-free.
+          </p>
+        </div>
+
+        <div className="content-section">
+          <h2>Limitation of Liability</h2>
+          <p>
+            To the fullest extent permitted by law, Jobsera and its operators
+            shall not be liable for any indirect, incidental or consequential
+            damages arising from your use of the website, including but not
+            limited to outcomes related to job applications or interactions
+            with third parties discovered through the website.
+          </p>
+        </div>
+
+        <div className="content-section">
+          <h2>Governing Law</h2>
+          <p>
+            These Terms & Conditions are governed by the laws of India,
+            without regard to conflict of law principles.
+          </p>
+        </div>
+
+        <div className="content-section">
           <h2>Changes to These Terms</h2>
           <p>
             These Terms & Conditions may be updated from time to time. Any
-            changes will be reflected on this page.
+            changes will be reflected on this page with a revised effective
+            date.
           </p>
         </div>
 
