@@ -23,6 +23,51 @@ type TranslateArgs = {
   lang: Lang;
 };
 
+// The free translation endpoint can return 403 ("forbidden") when hit with
+// too many simultaneous requests — this is what caused the jobs/blogs
+// listing pages (which translate many fields at once) to silently fall
+// back to English. runLimited caps how many translation calls run at the
+// same time from a single request; the rest queue and run as slots free up.
+const MAX_CONCURRENT = 4;
+
+export async function runLimited<T>(
+  items: T[],
+  worker: (item: T, index: number) => Promise<void>
+): Promise<void> {
+  let cursor = 0;
+
+  async function runNext(): Promise<void> {
+    const index = cursor++;
+    if (index >= items.length) return;
+    await worker(items[index], index);
+    return runNext();
+  }
+
+  const runners = Array.from(
+    { length: Math.min(MAX_CONCURRENT, items.length) },
+    () => runNext()
+  );
+
+  await Promise.all(runners);
+}
+
+// Translates a batch of {sourceTable, sourceId, field, text} items for a
+// given language, respecting the concurrency cap above. Used anywhere many
+// fields need translating in one request (listing pages, the /api/translate
+// route for client components).
+export async function translateBatch(
+  items: Omit<TranslateArgs, "lang">[],
+  lang: Lang
+): Promise<string[]> {
+  const results: string[] = new Array(items.length);
+
+  await runLimited(items, async (item, index) => {
+    results[index] = await translateCached({ ...item, lang });
+  });
+
+  return results;
+}
+
 // MyMemory-style APIs cap request size, but this endpoint handles longer
 // text fine — we still chunk conservatively to keep URLs well under browser
 // / server URL-length limits and to keep each translation call fast.
@@ -45,7 +90,7 @@ function chunkText(text: string, maxLen = 1400): string[] {
   return chunks.length > 0 ? chunks : [text];
 }
 
-async function translateChunk(chunk: string): Promise<string> {
+async function translateChunk(chunk: string, attempt = 0): Promise<string> {
   const params = new URLSearchParams({
     client: "gtx",
     sl: "en",
@@ -60,6 +105,12 @@ async function translateChunk(chunk: string): Promise<string> {
   );
 
   if (!response.ok) {
+    // One retry after a short pause — smooths over transient 403s from
+    // brief rate-limit blips rather than giving up immediately.
+    if (attempt === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      return translateChunk(chunk, 1);
+    }
     return chunk;
   }
 
@@ -111,9 +162,12 @@ export async function translateCached({
 
   try {
     const chunks = chunkText(text);
-    const translatedChunks = await Promise.all(
-      chunks.map((chunk) => translateChunk(chunk))
-    );
+    const translatedChunks: string[] = new Array(chunks.length);
+
+    await runLimited(chunks, async (chunk, index) => {
+      translatedChunks[index] = await translateChunk(chunk);
+    });
+
     const translated = translatedChunks.join(" ");
 
     if (!translated) {
@@ -138,3 +192,4 @@ export async function translateCached({
     return text;
   }
 }
+
