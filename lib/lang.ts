@@ -90,6 +90,47 @@ export const dictionary = {
     unable_to_load_articles: "Unable to load articles",
     try_again_later: "Please try again later.",
     find_next_opportunity: "Find your next opportunity.",
+
+    // Homepage
+    hero_eyebrow: "YOUR CAREER STARTS HERE",
+    hero_title_line1: "Find Opportunities.",
+    hero_title_line2: "Build",
+    hero_title_future: "Your Future.",
+    hero_description:
+      "Discover the right job opportunities and take the next step in your career with confidence.",
+    search_job_input_placeholder: "Job title, keywords or company",
+    location_placeholder: "Location",
+    search_jobs_button: "Search Jobs",
+    popular_label: "Popular:",
+    qual_10th: "10th Pass",
+    qual_12th: "12th Pass",
+    qual_graduate: "Graduate",
+    qual_post_graduate: "Post Graduate",
+    qual_diploma: "Diploma",
+    qual_iti: "ITI",
+    qualification_explore: "Explore Jobs →",
+    find_your_opportunity_eyebrow: "FIND YOUR OPPORTUNITY",
+    jobs_by_qualification_heading: "Jobs By Qualification",
+    jobs_by_qualification_desc:
+      "Find opportunities that match your education and experience.",
+    opportunities_eyebrow: "OPPORTUNITIES",
+    latest_jobs_heading: "Latest Jobs",
+    latest_jobs_desc: "Discover recently added opportunities.",
+    no_active_jobs: "No active jobs yet. Check back soon.",
+    recently_added: "Recently added",
+    career_insights_desc:
+      "Useful information to help you make better career decisions.",
+    view_all_label: "View All",
+    no_articles_home: "No published articles yet. Check back soon.",
+    stay_updated_eyebrow: "STAY UPDATED",
+    notif_heading: "Don't miss what's next.",
+    notif_desc:
+      "Enable Jobsera notifications and get updates about new opportunities and important content.",
+    notif_button: "Enable Notifications",
+    notif_message: "Notifications will be available soon.",
+
+    // Footer
+    footer_copyright: "© 2026 Jobsera. All rights reserved.",
   },
   hi: {
     nav_jobs: "नौकरियाँ",
@@ -172,12 +213,48 @@ export const dictionary = {
     unable_to_load_articles: "लेख लोड नहीं हो सके",
     try_again_later: "कृपया बाद में पुनः प्रयास करें।",
     find_next_opportunity: "अपना अगला अवसर खोजें।",
+
+    hero_eyebrow: "आपका करियर यहीं से शुरू होता है",
+    hero_title_line1: "अवसर खोजें।",
+    hero_title_line2: "बनाएं",
+    hero_title_future: "अपना भविष्य।",
+    hero_description:
+      "सही नौकरी के अवसर खोजें और आत्मविश्वास के साथ अपने करियर में अगला कदम बढ़ाएं।",
+    search_job_input_placeholder: "नौकरी का नाम, कीवर्ड या कंपनी",
+    location_placeholder: "स्थान",
+    search_jobs_button: "नौकरियाँ खोजें",
+    popular_label: "लोकप्रिय:",
+    qual_10th: "10वीं पास",
+    qual_12th: "12वीं पास",
+    qual_graduate: "स्नातक",
+    qual_post_graduate: "स्नातकोत्तर",
+    qual_diploma: "डिप्लोमा",
+    qual_iti: "आईटीआई",
+    qualification_explore: "नौकरियाँ देखें →",
+    find_your_opportunity_eyebrow: "अपना अवसर खोजें",
+    jobs_by_qualification_heading: "योग्यता अनुसार नौकरियाँ",
+    jobs_by_qualification_desc:
+      "अपनी शिक्षा और अनुभव से मेल खाने वाले अवसर खोजें।",
+    opportunities_eyebrow: "अवसर",
+    latest_jobs_heading: "नवीनतम नौकरियाँ",
+    latest_jobs_desc: "हाल ही में जोड़े गए अवसर देखें।",
+    no_active_jobs: "अभी कोई सक्रिय नौकरी नहीं है। जल्द ही देखें।",
+    recently_added: "हाल ही में जोड़ी गई",
+    career_insights_desc:
+      "बेहतर करियर निर्णय लेने में मदद के लिए उपयोगी जानकारी।",
+    view_all_label: "सभी देखें",
+    no_articles_home: "अभी तक कोई लेख प्रकाशित नहीं हुआ। जल्द ही देखें।",
+    stay_updated_eyebrow: "अपडेट रहें",
+    notif_heading: "आगे क्या है, मिस न करें।",
+    notif_desc:
+      "Jobsera नोटिफिकेशन चालू करें और नए अवसरों व महत्वपूर्ण जानकारी के अपडेट पाएं।",
+    notif_button: "नोटिफिकेशन चालू करें",
+    notif_message: "नोटिफिकेशन जल्द ही उपलब्ध होंगे।",
+
+    footer_copyright: "© 2026 Jobsera. सर्वाधिकार सुरक्षित।",
   },
 } as const;
 
 export function t(lang: Lang, key: keyof (typeof dictionary)["en"]): string {
   return dictionary[lang][key];
 }
-
-
-
