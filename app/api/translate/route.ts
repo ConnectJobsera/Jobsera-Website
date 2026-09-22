@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { translateCached } from "../../../lib/translate";
+import { translateBatch } from "../../../lib/translate";
 import type { Lang } from "../../../lib/lang";
 
 // Lets CLIENT components (which can't import server-only code like
@@ -33,16 +33,14 @@ export async function POST(request: NextRequest) {
     // an unexpectedly huge request.
     const safeItems = items.slice(0, 200);
 
-    const translations = await Promise.all(
-      safeItems.map((item) =>
-        translateCached({
-          sourceTable: item.sourceTable,
-          sourceId: item.sourceId,
-          field: item.field,
-          text: item.text || "",
-          lang,
-        })
-      )
+    const translations = await translateBatch(
+      safeItems.map((item) => ({
+        sourceTable: item.sourceTable,
+        sourceId: item.sourceId,
+        field: item.field,
+        text: item.text || "",
+      })),
+      lang
     );
 
     return NextResponse.json({ translations });
