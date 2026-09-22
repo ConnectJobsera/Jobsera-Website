@@ -179,3 +179,4 @@ export function t(lang: Lang, key: keyof (typeof dictionary)["en"]): string {
   return dictionary[lang][key];
 }
 
+
