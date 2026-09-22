@@ -51,7 +51,7 @@ export default async function RootLayout({
 
         <main>{children}</main>
 
-        <Footer />
+        <Footer lang={lang} />
 
         {/* Google Analytics 4 */}
         <Script
@@ -71,4 +71,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
