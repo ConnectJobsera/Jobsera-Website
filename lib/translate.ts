@@ -1,4 +1,4 @@
-import { createClient } from "./supabase/server";
+import { createServiceClient } from "./supabase/service";
 import type { Lang } from "./lang";
 
 // Translates dynamic Supabase content (job descriptions, blog posts, etc.)
@@ -145,7 +145,12 @@ export async function translateCached({
     return text;
   }
 
-  const supabase = await createClient();
+  // Uses the service-role client, not the public anon client: RLS on
+  // translations_cache now blocks public writes (see
+  // /supabase/security_hardening.sql), so writing here requires bypassing
+  // RLS via the service role key. Reads work either way; using the service
+  // client for both keeps this simple and avoids depending on cookies().
+  const supabase = createServiceClient();
 
   const { data: cached } = await supabase
     .from("translations_cache")
@@ -192,4 +197,5 @@ export async function translateCached({
     return text;
   }
 }
+
 
