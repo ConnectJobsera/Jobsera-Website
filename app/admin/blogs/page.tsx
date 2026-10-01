@@ -3,6 +3,7 @@
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "../../../lib/supabase/client";
+import PostLinksEditor from "../../../components/PostLinksEditor";
 
 type Blog = {
   id: string;
@@ -11,17 +12,28 @@ type Blog = {
   title_en: string;
   description_en: string;
   content_en: string;
+  body_1_en: string | null;
+  body_2_en: string | null;
+  body_3_en: string | null;
   is_published: boolean;
   created_at: string;
   updated_at: string;
 };
+
+const BLOG_LINK_POSITIONS = [
+  { key: "middle_1", label: "After Body Part 1" },
+  { key: "middle_2", label: "After Body Part 2" },
+  { key: "bottom", label: "Bottom (after Body Part 3)" },
+];
 
 const emptyForm = {
   slug: "",
   category: "",
   title_en: "",
   description_en: "",
-  content_en: "",
+  body_1_en: "",
+  body_2_en: "",
+  body_3_en: "",
   is_published: false,
 };
 
@@ -45,6 +57,7 @@ export default function AdminBlogsPage() {
   const [form, setForm] = useState(emptyForm);
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [linksEditingId, setLinksEditingId] = useState<string | null>(null);
 
   async function loadBlogs() {
     setLoading(true);
@@ -83,7 +96,9 @@ export default function AdminBlogsPage() {
       category: blog.category ?? "",
       title_en: blog.title_en ?? "",
       description_en: blog.description_en ?? "",
-      content_en: blog.content_en ?? "",
+      body_1_en: blog.body_1_en ?? "",
+      body_2_en: blog.body_2_en ?? "",
+      body_3_en: blog.body_3_en ?? "",
       is_published: blog.is_published,
     });
     setSlugTouched(true);
@@ -304,14 +319,14 @@ export default function AdminBlogsPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Content</label>
+              <label className="form-label">Body — Part 1</label>
               <textarea
                 className="form-textarea"
-                rows={10}
+                rows={6}
                 required
-                value={form.content_en}
+                value={form.body_1_en}
                 onChange={(e) =>
-                  setForm({ ...form, content_en: e.target.value })
+                  setForm({ ...form, body_1_en: e.target.value })
                 }
               />
               <p
@@ -321,7 +336,52 @@ export default function AdminBlogsPage() {
                   marginTop: "4px",
                 }}
               >
-                Separate paragraphs with a blank line.
+                A link box will appear on the page right after this part.
+              </p>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Body — Part 2</label>
+              <textarea
+                className="form-textarea"
+                rows={6}
+                required
+                value={form.body_2_en}
+                onChange={(e) =>
+                  setForm({ ...form, body_2_en: e.target.value })
+                }
+              />
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-secondary)",
+                  marginTop: "4px",
+                }}
+              >
+                A link box will appear on the page right after this part.
+              </p>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Body — Part 3</label>
+              <textarea
+                className="form-textarea"
+                rows={6}
+                required
+                value={form.body_3_en}
+                onChange={(e) =>
+                  setForm({ ...form, body_3_en: e.target.value })
+                }
+              />
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-secondary)",
+                  marginTop: "4px",
+                }}
+              >
+                A final link box will appear at the bottom of the page, after
+                this part.
               </p>
             </div>
 
@@ -380,57 +440,93 @@ export default function AdminBlogsPage() {
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-lg)",
                   background: "#ffffff",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "16px",
-                  flexWrap: "wrap",
+                  display: "grid",
+                  gap: "14px",
                 }}
               >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      letterSpacing: "0.04em",
-                      color: blog.is_published ? "#16a34a" : "#94a3b8",
-                      textTransform: "uppercase",
-                      marginBottom: "4px",
-                    }}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        letterSpacing: "0.04em",
+                        color: blog.is_published ? "#16a34a" : "#94a3b8",
+                        textTransform: "uppercase",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {blog.is_published ? "Published" : "Draft"} ·{" "}
+                      {blog.category}
+                    </p>
+                    <p style={{ fontWeight: 700 }}>{blog.title_en}</p>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--text-secondary)",
+                      }}
+                    >
+                      /blogs/{blog.slug}
+                    </p>
+                  </div>
+
+                  <div
+                    style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
                   >
-                    {blog.is_published ? "Published" : "Draft"} ·{" "}
-                    {blog.category}
-                  </p>
-                  <p style={{ fontWeight: 700 }}>{blog.title_en}</p>
-                  <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-                    /blogs/{blog.slug}
-                  </p>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() => togglePublished(blog)}
+                    >
+                      {blog.is_published ? "Unpublish" : "Publish"}
+                    </button>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() => startEdit(blog)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        setLinksEditingId(
+                          linksEditingId === blog.id ? null : blog.id
+                        )
+                      }
+                    >
+                      {linksEditingId === blog.id
+                        ? "Hide Links"
+                        : "Manage Links"}
+                    </button>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      style={{ color: "#dc2626" }}
+                      onClick={() => deleteBlog(blog)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    onClick={() => togglePublished(blog)}
-                  >
-                    {blog.is_published ? "Unpublish" : "Publish"}
-                  </button>
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    onClick={() => startEdit(blog)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    style={{ color: "#dc2626" }}
-                    onClick={() => deleteBlog(blog)}
-                  >
-                    Delete
-                  </button>
-                </div>
+                {linksEditingId === blog.id && (
+                  <PostLinksEditor
+                    table="blog_links"
+                    matchColumn="blog_id"
+                    matchValue={blog.id}
+                    positions={BLOG_LINK_POSITIONS}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -439,3 +535,4 @@ export default function AdminBlogsPage() {
     </main>
   );
 }
+
