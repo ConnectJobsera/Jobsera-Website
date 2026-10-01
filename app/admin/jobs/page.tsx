@@ -3,6 +3,12 @@
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "../../../lib/supabase/client";
+import PostLinksEditor from "../../../components/PostLinksEditor";
+
+const JOB_LINK_POSITIONS = [
+  { key: "middle", label: "Middle (above Salary)" },
+  { key: "bottom", label: "Bottom (after Apply Now)" },
+];
 
 type Job = {
   id: string;
@@ -116,6 +122,7 @@ export default function AdminJobsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<JobForm>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [linksEditingId, setLinksEditingId] = useState<string | null>(null);
 
   async function loadJobs() {
     setLoading(true);
@@ -1224,106 +1231,138 @@ export default function AdminJobsPage() {
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-lg)",
                   background: "#ffffff",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "16px",
-                  flexWrap: "wrap",
+                  display: "grid",
+                  gap: "14px",
                 }}
               >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      letterSpacing: "0.04em",
-                      color: job.is_active
-                        ? "#16a34a"
-                        : "#94a3b8",
-                      textTransform: "uppercase",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    {job.is_active
-                      ? "Active"
-                      : "Inactive"}{" "}
-                    · {job.organization || job.company}
-                  </p>
-
-                  <p
-                    style={{
-                      fontWeight: 700,
-                    }}
-                  >
-                    {job.title}
-                  </p>
-
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    {job.post_name || "Post not specified"}{" "}
-                    · {job.state || "State not specified"} ·{" "}
-                    {job.location}
-                  </p>
-
-                  {job.last_date && (
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "var(--text-secondary)",
-                        marginTop: "4px",
-                      }}
-                    >
-                      Last Date: {job.last_date}
-                    </p>
-                  )}
-                </div>
-
                 <div
                   style={{
                     display: "flex",
-                    gap: "8px",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
                     flexWrap: "wrap",
                   }}
                 >
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    onClick={() =>
-                      toggleActive(job)
-                    }
-                  >
-                    {job.is_active
-                      ? "Deactivate"
-                      : "Activate"}
-                  </button>
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        letterSpacing: "0.04em",
+                        color: job.is_active
+                          ? "#16a34a"
+                          : "#94a3b8",
+                        textTransform: "uppercase",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {job.is_active
+                        ? "Active"
+                        : "Inactive"}{" "}
+                      · {job.organization || job.company}
+                    </p>
 
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    onClick={() =>
-                      startEdit(job)
-                    }
-                  >
-                    Edit
-                  </button>
+                    <p
+                      style={{
+                        fontWeight: 700,
+                      }}
+                    >
+                      {job.title}
+                    </p>
 
-                  <button
-                    type="button"
-                    className="button button-secondary"
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--text-secondary)",
+                      }}
+                    >
+                      {job.post_name || "Post not specified"}{" "}
+                      · {job.state || "State not specified"} ·{" "}
+                      {job.location}
+                    </p>
+
+                    {job.last_date && (
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "var(--text-secondary)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Last Date: {job.last_date}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
                     style={{
-                      color: "#dc2626",
+                      display: "flex",
+                      gap: "8px",
+                      flexWrap: "wrap",
                     }}
-                    onClick={() =>
-                      deleteJob(job)
-                    }
                   >
-                    Delete
-                  </button>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        toggleActive(job)
+                      }
+                    >
+                      {job.is_active
+                        ? "Deactivate"
+                        : "Activate"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        startEdit(job)
+                      }
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        setLinksEditingId(
+                          linksEditingId === job.id
+                            ? null
+                            : job.id
+                        )
+                      }
+                    >
+                      {linksEditingId === job.id
+                        ? "Hide Links"
+                        : "Manage Links"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      style={{
+                        color: "#dc2626",
+                      }}
+                      onClick={() =>
+                        deleteJob(job)
+                      }
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
+
+                {linksEditingId === job.id && (
+                  <PostLinksEditor
+                    table="job_links"
+                    matchColumn="job_id"
+                    matchValue={job.id}
+                    positions={JOB_LINK_POSITIONS}
+                  />
+                )}
               </div>
             ))}
           </div>
