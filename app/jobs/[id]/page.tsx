@@ -312,7 +312,7 @@ export default async function JobDetailPage({
           </section>
         )}
 
-        <LinkBox groupKey="job_middle" lang={lang} />
+        <LinkBox jobId={job.id} position="middle" lang={lang} />
 
         {salary && (
           <section className="content-section">
@@ -360,7 +360,7 @@ export default async function JobDetailPage({
           </section>
         )}
 
-        <LinkBox groupKey="job_bottom" lang={lang} />
+        <LinkBox jobId={job.id} position="bottom" lang={lang} />
 
         <section className="contact-card">
           <h2>{t(lang, "contact_heading")}</h2>
@@ -373,3 +373,4 @@ export default async function JobDetailPage({
     </main>
   );
 }
+
