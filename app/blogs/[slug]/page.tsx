@@ -8,11 +8,15 @@ import { translateCached } from "../../../lib/translate";
 import LinkBox from "../../../components/LinkBox";
 
 type BlogArticle = {
+  id: string;
   slug: string;
   category: string;
   title_en: string;
   description_en: string;
   content_en: string | null;
+  body_1_en: string | null;
+  body_2_en: string | null;
+  body_3_en: string | null;
   created_at: string | null;
 };
 
@@ -29,7 +33,9 @@ async function getArticle(slug: string) {
 
   const { data, error } = await supabase
     .from("blogs")
-    .select("slug, category, title_en, description_en, content_en, created_at")
+    .select(
+      "id, slug, category, title_en, description_en, content_en, body_1_en, body_2_en, body_3_en, created_at"
+    )
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -85,38 +91,59 @@ export default async function BlogDetailPage({
 
   const data = article as BlogArticle;
 
-  const contentBlocks: string[] = data.content_en
+  const hasNewBodyFields = Boolean(
+    data.body_1_en?.trim() || data.body_2_en?.trim() || data.body_3_en?.trim()
+  );
+
+  const [title, description] = await Promise.all([
+    translateCached({ sourceTable: "blogs", sourceId: data.id, field: "title", text: data.title_en, lang }),
+    translateCached({ sourceTable: "blogs", sourceId: data.id, field: "description", text: data.description_en, lang }),
+  ]);
+
+  // --- New path: three explicit body fields, no headings, plain paragraphs.
+  let bodyParts: string[] = [];
+
+  if (hasNewBodyFields) {
+    const [body1, body2, body3] = await Promise.all([
+      translateCached({ sourceTable: "blogs", sourceId: data.id, field: "body_1", text: data.body_1_en || "", lang }),
+      translateCached({ sourceTable: "blogs", sourceId: data.id, field: "body_2", text: data.body_2_en || "", lang }),
+      translateCached({ sourceTable: "blogs", sourceId: data.id, field: "body_3", text: data.body_3_en || "", lang }),
+    ]);
+
+    bodyParts = [body1, body2, body3];
+  }
+
+  // --- Legacy fallback: old blank-line-split content_en, for articles
+  // published before the 3-body-field system existed and not yet re-saved.
+  const legacyContentBlocks: string[] = !hasNewBodyFields && data.content_en
     ? data.content_en
         .split(/\n\s*\n/)
         .map((block: string) => block.trim())
         .filter(Boolean)
     : [];
 
-  const [title, description] = await Promise.all([
-    translateCached({ sourceTable: "blogs", sourceId: data.slug, field: "title", text: data.title_en, lang }),
-    translateCached({ sourceTable: "blogs", sourceId: data.slug, field: "description", text: data.description_en, lang }),
-  ]);
+  const translatedLegacyBlocks = hasNewBodyFields
+    ? []
+    : await Promise.all(
+        legacyContentBlocks.map(async (block, index) => {
+          const lines: string[] = block
+            .split("\n")
+            .map((line: string) => line.trim())
+            .filter(Boolean);
 
-  const translatedBlocks = await Promise.all(
-    contentBlocks.map(async (block, index) => {
-      const lines: string[] = block
-        .split("\n")
-        .map((line: string) => line.trim())
-        .filter(Boolean);
+          const heading = lines[0];
+          const paragraphs = lines.slice(1);
 
-      const heading = lines[0];
-      const paragraphs = lines.slice(1);
+          const [translatedHeading, ...translatedParagraphs] = await Promise.all([
+            translateCached({ sourceTable: "blogs", sourceId: data.id, field: `block_${index}_heading`, text: heading, lang }),
+            ...paragraphs.map((p, pIdx) =>
+              translateCached({ sourceTable: "blogs", sourceId: data.id, field: `block_${index}_para_${pIdx}`, text: p, lang })
+            ),
+          ]);
 
-      const [translatedHeading, ...translatedParagraphs] = await Promise.all([
-        translateCached({ sourceTable: "blogs", sourceId: data.slug, field: `block_${index}_heading`, text: heading, lang }),
-        ...paragraphs.map((p, pIdx) =>
-          translateCached({ sourceTable: "blogs", sourceId: data.slug, field: `block_${index}_para_${pIdx}`, text: p, lang })
-        ),
-      ]);
-
-      return { heading: translatedHeading, paragraphs: translatedParagraphs };
-    })
-  );
+          return { heading: translatedHeading, paragraphs: translatedParagraphs };
+        })
+      );
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -147,30 +174,73 @@ export default async function BlogDetailPage({
           <p className="page-intro">{description}</p>
         </div>
 
-        <div>
-          {translatedBlocks.map((block, index) => (
-            <div key={`${data.slug}-${index}`}>
-              <section className="content-section">
-                <h2>{block.heading}</h2>
-                {block.paragraphs.map((paragraph, paragraphIndex) => (
-                  <p
-                    key={`${data.slug}-${index}-${paragraphIndex}`}
-                    style={{ marginTop: "10px" }}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </section>
+        {hasNewBodyFields ? (
+          <div>
+            {bodyParts.map((part, index) => {
+              if (!part.trim()) return null;
 
-              {/* Per spec: link box after paragraph 1 and after paragraph 2 */}
-              {index === 0 && <LinkBox groupKey="blog_middle_1" lang={lang} />}
-              {index === 1 && <LinkBox groupKey="blog_middle_2" lang={lang} />}
-            </div>
-          ))}
-        </div>
+              const isLast = index === bodyParts.length - 1;
+              const linkPosition =
+                index === 0 ? "middle_1" : index === 1 ? "middle_2" : "bottom";
 
-        {/* Per spec: link box at the bottom of the article */}
-        <LinkBox groupKey="blog_bottom" lang={lang} />
+              return (
+                <div key={`${data.slug}-body-${index}`}>
+                  <section className="content-section">
+                    {part
+                      .split(/\n\s*\n/)
+                      .map((p) => p.trim())
+                      .filter(Boolean)
+                      .map((paragraph, pIdx) => (
+                        <p
+                          key={`${data.slug}-body-${index}-${pIdx}`}
+                          style={{ marginTop: pIdx === 0 ? 0 : "10px" }}
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                  </section>
+
+                  {!isLast && (
+                    <LinkBox
+                      blogId={data.id}
+                      position={linkPosition as "middle_1" | "middle_2"}
+                      lang={lang}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+            <LinkBox blogId={data.id} position="bottom" lang={lang} />
+          </div>
+        ) : (
+          <div>
+            {translatedLegacyBlocks.map((block, index) => (
+              <div key={`${data.slug}-${index}`}>
+                <section className="content-section">
+                  <h2>{block.heading}</h2>
+                  {block.paragraphs.map((paragraph, paragraphIndex) => (
+                    <p
+                      key={`${data.slug}-${index}-${paragraphIndex}`}
+                      style={{ marginTop: "10px" }}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </section>
+
+                {index === 0 && (
+                  <LinkBox blogId={data.id} position="middle_1" lang={lang} />
+                )}
+                {index === 1 && (
+                  <LinkBox blogId={data.id} position="middle_2" lang={lang} />
+                )}
+              </div>
+            ))}
+
+            <LinkBox blogId={data.id} position="bottom" lang={lang} />
+          </div>
+        )}
 
         <div className="contact-card">
           <h2>{t(lang, "looking_for_opportunities")}</h2>
