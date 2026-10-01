@@ -69,8 +69,6 @@ export default async function LinkBox(props: LinkBoxProps) {
 
   return (
     <div className="link-box" aria-label={t(lang, "related_links")}>
-      <p className="link-box-heading">{t(lang, "related_links")}</p>
-
       <div className="link-box-list">
         {links.map((link) => {
           const isInternal = link.url.startsWith("/");
