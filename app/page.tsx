@@ -94,6 +94,12 @@ type HomeHighlightRow = {
   link: string;
 };
 
+type HomeLink = {
+  id: string;
+  title: string;
+  url: string;
+};
+
 type JobTranslation = { company: string; title: string; location: string; type: string; experience: string };
 type ArticleTranslation = { title: string; description: string };
 
@@ -127,6 +133,7 @@ export default function Home() {
   const [jobs, setJobs] = useState<HomeJob[]>([]);
   const [articles, setArticles] = useState<HomeArticle[]>([]);
   const [highlight, setHighlight] = useState<HomeHighlightRow>(defaultHighlight);
+  const [homeLinks, setHomeLinks] = useState<HomeLink[]>([]);
 
   const [lang, setLang] = useState<Lang>("en");
   const [jobTranslations, setJobTranslations] = useState<Record<string, JobTranslation>>({});
@@ -141,32 +148,40 @@ export default function Home() {
     const supabase = createClient();
 
     async function loadHomeData() {
-      const [jobsResult, blogsResult, highlightsResult] = await Promise.all([
-        supabase
-          .from("jobs")
-          .select("id, company, title, location, type, experience, created_at")
-          .eq("is_active", true)
-          .order("created_at", { ascending: false })
-          .limit(3),
-        supabase
-          .from("blogs")
-          .select("slug, category, title_en, description_en")
-          .eq("is_published", true)
-          .order("created_at", { ascending: false })
-          .limit(3),
-        supabase
-          .from("highlights")
-          .select("text, link")
-          .eq("is_active", true)
-          .order("created_at", { ascending: false })
-          .limit(1),
-      ]);
+      const [jobsResult, blogsResult, highlightsResult, linksResult] =
+        await Promise.all([
+          supabase
+            .from("jobs")
+            .select("id, company, title, location, type, experience, created_at")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("blogs")
+            .select("slug, category, title_en, description_en")
+            .eq("is_published", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("highlights")
+            .select("text, link")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(1),
+          supabase
+            .from("content_links")
+            .select("id, title, url")
+            .eq("group_key", "home")
+            .eq("is_active", true)
+            .order("sort_order", { ascending: true }),
+        ]);
 
       if (jobsResult.data) setJobs(jobsResult.data);
       if (blogsResult.data) setArticles(blogsResult.data);
       if (highlightsResult.data && highlightsResult.data.length > 0) {
         setHighlight(highlightsResult.data[0]);
       }
+      if (linksResult.data) setHomeLinks(linksResult.data);
     }
 
     loadHomeData();
@@ -272,6 +287,8 @@ export default function Home() {
 
   return (
     <>
+      <HomeHighlight text={highlightText || highlight.text} href={highlight.link} />
+
       <section className="hero">
         <div className="hero-doodle hero-doodle-circle" aria-hidden="true" />
         <div className="hero-doodle hero-doodle-spark" aria-hidden="true">✦</div>
@@ -336,8 +353,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <HomeHighlight text={highlightText || highlight.text} href={highlight.link} />
 
       <section className="section qualification-section">
         <div className="container">
@@ -444,6 +459,38 @@ export default function Home() {
         </div>
       </section>
 
+      {homeLinks.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="link-box" aria-label={t(lang, "related_links")}>
+              <div className="link-box-list">
+                {homeLinks.map((link) =>
+                  link.url.startsWith("/") ? (
+                    <Link
+                      key={link.id}
+                      href={link.url}
+                      className="link-box-item"
+                    >
+                      {link.title}
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      className="link-box-item"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link.title}
+                    </a>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="notification-section">
         <div className="container">
           <div className="notification-card">
@@ -466,4 +513,3 @@ export default function Home() {
     </>
   );
 }
-
