@@ -18,31 +18,9 @@ const groups = [
     title: "Homepage Links",
     description: "Five links displayed in the related-links box on the homepage.",
   },
-  {
-    key: "job_middle",
-    title: "Job Page — Middle Links",
-    description: "Five links displayed around the middle of individual job pages.",
-  },
-  {
-    key: "job_bottom",
-    title: "Job Page — Bottom Links",
-    description: "Five links displayed below the Apply Now section.",
-  },
-  {
-    key: "blog_middle_1",
-    title: "Blog Page — Middle Links 1",
-    description: "First five-link box displayed in the middle of individual blog pages.",
-  },
-  {
-    key: "blog_middle_2",
-    title: "Blog Page — Middle Links 2",
-    description: "Second five-link box displayed later on individual blog pages.",
-  },
-  {
-    key: "blog_bottom",
-    title: "Blog Page — Bottom Links",
-    description: "Five links displayed at the bottom of individual blog pages.",
-  },
+  // Job and blog link boxes are now per-post, not global — manage them
+  // from each individual listing's "Manage Links" button in Manage Jobs /
+  // Manage Blogs instead of here.
 ] as const;
 
 async function saveLink(formData: FormData) {
@@ -520,3 +498,4 @@ export default async function AdminLinksPage() {
     </main>
   );
 }
+
