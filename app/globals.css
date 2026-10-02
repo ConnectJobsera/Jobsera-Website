@@ -450,6 +450,11 @@ main {
   color: var(--jobsera-blue);
   font-weight: 650;
 }
+
+.content-section a.button-primary {
+  color: #ffffff;
+}
+}
 .contact-card {
   margin-top: 40px;
   padding: 28px;
