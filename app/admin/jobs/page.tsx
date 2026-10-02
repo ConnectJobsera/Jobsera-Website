@@ -3,12 +3,10 @@
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "../../../lib/supabase/client";
-import PostLinksEditor from "../../../components/PostLinksEditor";
-
-const JOB_LINK_POSITIONS = [
-  { key: "middle", label: "Middle (above Salary)" },
-  { key: "bottom", label: "Bottom (after Apply Now)" },
-];
+import LinkRowsFields, {
+  type LinkRow,
+  emptyLinkRows,
+} from "../../../components/LinkRowsFields";
 
 type Job = {
   id: string;
@@ -122,7 +120,8 @@ export default function AdminJobsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<JobForm>(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [linksEditingId, setLinksEditingId] = useState<string | null>(null);
+  const [middleLinks, setMiddleLinks] = useState<LinkRow[]>(emptyLinkRows());
+  const [bottomLinks, setBottomLinks] = useState<LinkRow[]>(emptyLinkRows());
 
   async function loadJobs() {
     setLoading(true);
@@ -152,11 +151,44 @@ export default function AdminJobsPage() {
     setEditingId(null);
     setForm({ ...emptyForm });
     setShowLegacyFields(false);
+    setMiddleLinks(emptyLinkRows());
+    setBottomLinks(emptyLinkRows());
     setShowForm(true);
   }
 
-  function startEdit(job: Job) {
+  async function startEdit(job: Job) {
     setEditingId(job.id);
+
+    setMiddleLinks(emptyLinkRows());
+    setBottomLinks(emptyLinkRows());
+
+    const { data: existingLinks } = await supabase
+      .from("job_links")
+      .select("position, sort_order, title, url")
+      .eq("job_id", job.id)
+      .order("sort_order", { ascending: true });
+
+    if (existingLinks) {
+      const middle = emptyLinkRows();
+      const bottom = emptyLinkRows();
+
+      existingLinks.forEach(
+        (row: {
+          position: string;
+          sort_order: number;
+          title: string;
+          url: string;
+        }) => {
+          const target = row.position === "middle" ? middle : bottom;
+          if (row.sort_order >= 0 && row.sort_order < target.length) {
+            target[row.sort_order] = { title: row.title, url: row.url };
+          }
+        }
+      );
+
+      setMiddleLinks(middle);
+      setBottomLinks(bottom);
+    }
 
     setForm({
       title: job.title ?? "",
@@ -352,6 +384,8 @@ export default function AdminJobsPage() {
       is_active: form.is_active,
     };
 
+    let jobId = editingId;
+
     if (editingId) {
       const { error } = await supabase
         .from("jobs")
@@ -364,14 +398,74 @@ export default function AdminJobsPage() {
         return;
       }
     } else {
-      const { error } = await supabase
+      const { data: inserted, error } = await supabase
         .from("jobs")
-        .insert(payload);
+        .insert(payload)
+        .select("id")
+        .single();
 
       if (error) {
         setError(error.message);
         setSaving(false);
         return;
+      }
+
+      jobId = inserted.id;
+    }
+
+    // Links are optional — save whichever of the 10 slots (5 middle + 5
+    // bottom) were actually filled in. Replace-all is simplest and safe
+    // here since this always runs right after the job itself is saved.
+    if (jobId) {
+      const { error: deleteError } = await supabase
+        .from("job_links")
+        .delete()
+        .eq("job_id", jobId);
+
+      if (deleteError) {
+        setError(deleteError.message);
+        setSaving(false);
+        return;
+      }
+
+      const rowsToInsert: Record<string, unknown>[] = [];
+
+      middleLinks.forEach((row, index) => {
+        if (row.title.trim() && row.url.trim()) {
+          rowsToInsert.push({
+            job_id: jobId,
+            position: "middle",
+            sort_order: index,
+            title: row.title.trim(),
+            url: row.url.trim(),
+            is_active: true,
+          });
+        }
+      });
+
+      bottomLinks.forEach((row, index) => {
+        if (row.title.trim() && row.url.trim()) {
+          rowsToInsert.push({
+            job_id: jobId,
+            position: "bottom",
+            sort_order: index,
+            title: row.title.trim(),
+            url: row.url.trim(),
+            is_active: true,
+          });
+        }
+      });
+
+      if (rowsToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from("job_links")
+          .insert(rowsToInsert);
+
+        if (insertError) {
+          setError(insertError.message);
+          setSaving(false);
+          return;
+        }
       }
     }
 
@@ -917,6 +1011,12 @@ export default function AdminJobsPage() {
                 Job Details
               </h3>
 
+              <LinkRowsFields
+                label="Middle Links (shown above Salary on the job page)"
+                rows={middleLinks}
+                onChange={setMiddleLinks}
+              />
+
               <div className="form-group">
                 <label className="form-label">
                   Salary / Pay Scale
@@ -1025,6 +1125,12 @@ export default function AdminJobsPage() {
                   placeholder="https://..."
                 />
               </div>
+
+              <LinkRowsFields
+                label="Bottom Links (shown after the Apply Now button)"
+                rows={bottomLinks}
+                onChange={setBottomLinks}
+              />
             </section>
 
             {/* LEGACY / INTERNAL FIELDS */}
@@ -1327,22 +1433,6 @@ export default function AdminJobsPage() {
                     <button
                       type="button"
                       className="button button-secondary"
-                      onClick={() =>
-                        setLinksEditingId(
-                          linksEditingId === job.id
-                            ? null
-                            : job.id
-                        )
-                      }
-                    >
-                      {linksEditingId === job.id
-                        ? "Hide Links"
-                        : "Manage Links"}
-                    </button>
-
-                    <button
-                      type="button"
-                      className="button button-secondary"
                       style={{
                         color: "#dc2626",
                       }}
@@ -1354,15 +1444,6 @@ export default function AdminJobsPage() {
                     </button>
                   </div>
                 </div>
-
-                {linksEditingId === job.id && (
-                  <PostLinksEditor
-                    table="job_links"
-                    matchColumn="job_id"
-                    matchValue={job.id}
-                    positions={JOB_LINK_POSITIONS}
-                  />
-                )}
               </div>
             ))}
           </div>
@@ -1371,3 +1452,4 @@ export default function AdminJobsPage() {
     </main>
   );
 }
+
