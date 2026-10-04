@@ -97,7 +97,7 @@ async function saveLink(formData: FormData) {
   revalidatePath("/admin/links");
 }
 
-async function toggleLink(formData: FormData) {
+async function toggleLink(id: string, nextActive: boolean) {
   "use server";
 
   const supabase = await createClient();
@@ -121,9 +121,10 @@ async function toggleLink(formData: FormData) {
     redirect("/admin/login");
   }
 
-  const id = String(formData.get("id") || "");
-  const nextActive = String(formData.get("next_active")) === "true";
-
+  // id and nextActive are passed in via .bind() on the button's formAction
+  // below, not read from FormData — a submit button's own name/value is not
+  // a reliable way to get per-row data into a Server Action in Next.js, and
+  // was the actual cause of the intermittent "Missing link ID" crash.
   if (!id) {
     throw new Error("Missing link ID.");
   }
@@ -461,9 +462,11 @@ export default async function AdminLinksPage() {
 
                         <button
                           type="submit"
-                          formAction={toggleLink}
-                          name="id"
-                          value={link.id}
+                          formAction={toggleLink.bind(
+                            null,
+                            link.id,
+                            !link.is_active
+                          )}
                           style={{
                             border: 0,
                             background: "transparent",
@@ -480,12 +483,6 @@ export default async function AdminLinksPage() {
                             ? "Deactivate link"
                             : "Activate link"}
                         </button>
-
-                        <input
-                          type="hidden"
-                          name="next_active"
-                          value={link.is_active ? "false" : "true"}
-                        />
                       </div>
                     )}
                   </form>
@@ -498,4 +495,3 @@ export default async function AdminLinksPage() {
     </main>
   );
 }
-
