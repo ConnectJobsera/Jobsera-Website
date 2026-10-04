@@ -74,6 +74,7 @@ function QualificationIcon({ type }: { type: string }) {
 
 type HomeJob = {
   id: string;
+  organization: string | null;
   company: string;
   title: string;
   location: string;
@@ -152,7 +153,7 @@ export default function Home() {
         await Promise.all([
           supabase
             .from("jobs")
-            .select("id, company, title, location, type, experience, created_at")
+            .select("id, organization, company, title, location, type, experience, created_at")
             .eq("is_active", true)
             .order("created_at", { ascending: false })
             .limit(3),
@@ -400,7 +401,7 @@ export default function Home() {
                 return (
                   <article className="job-item" key={job.id}>
                     <div className="job-main">
-                      <span className="job-company">{translated?.company || job.company}</span>
+                      <p className="eyebrow">{job.organization || translated?.company || job.company}</p>
                       <h3 className="job-title">{translated?.title || job.title}</h3>
                       <div className="job-details">
                         <span>{translated?.location || job.location}</span>
