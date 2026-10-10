@@ -34,6 +34,7 @@ export const metadata: Metadata = {
   },
   other: {
     google: "notranslate",
+    "google-adsense-account": "ca-pub-7027967861765174",
   },
 };
 
